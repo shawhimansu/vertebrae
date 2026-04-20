@@ -3,777 +3,877 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Constitution Quest!</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Vertebrates Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2330;
+    --border: rgba(255,255,255,0.08);
+    --accent: #39d98a;
+    --accent2: #00b4d8;
+    --warn: #f4a261;
+    --danger: #e63946;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --radius: 14px;
+    --font: 'Sora', sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
 
-:root{
-  --saffron:#FF9933;
-  --white:#FFFDF7;
-  --green:#138808;
-  --navy:#000080;
-  --gold:#E8C547;
-  --bg:#FFF8EE;
-  --card:#FFFFFF;
-  --text:#1a1a2e;
-  --muted:#6b7280;
-  --correct:#16a34a;
-  --wrong:#dc2626;
-  --correct-bg:#f0fdf4;
-  --wrong-bg:#fef2f2;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-  font-family:'Hind',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  overflow-x:hidden;
-}
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
 
-/* Ashoka Chakra background pattern */
-body::before{
-  content:'';
-  position:fixed;
-  inset:0;
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(255,153,51,0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(19,136,8,0.08) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(0,0,128,0.04) 0%, transparent 70%);
-  pointer-events:none;
-  z-index:0;
-}
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(57,217,138,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(57,217,138,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-/* Decorative top bar - tricolor */
-.tricolor-bar{
-  height:8px;
-  background:linear-gradient(to right, var(--saffron) 33.33%, var(--white) 33.33% 66.66%, var(--green) 66.66%);
-  position:relative;
-  z-index:10;
-}
+  body::after {
+    content: '';
+    position: fixed;
+    top: -30%;
+    left: -20%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(ellipse, rgba(57,217,138,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-#app{
-  position:relative;
-  z-index:1;
-  max-width:600px;
-  margin:0 auto;
-  padding:1.5rem 1rem 3rem;
-}
+  .screen {
+    display: none;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+    padding: 2rem;
+    animation: fadeUp 0.4s ease;
+  }
 
-/* ── SCREENS ── */
-.screen{display:none;}
-.screen.active{display:block;animation:fadeUp 0.45s cubic-bezier(0.34,1.4,0.64,1);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  .screen.active { display: block; }
 
-/* ── HOME ── */
-.home-hero{text-align:center;padding:2rem 0 1rem;}
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-.chakra{
-  width:80px;height:80px;
-  margin:0 auto 1.25rem;
-  border:4px solid var(--navy);
-  border-radius:50%;
-  position:relative;
-  animation:spin 12s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.chakra::before,.chakra::after{
-  content:'';
-  position:absolute;
-  background:var(--navy);
-  border-radius:2px;
-}
-.chakra::before{width:3px;height:100%;left:50%;top:0;transform:translateX(-50%);}
-.chakra::after{width:100%;height:3px;top:50%;left:0;transform:translateY(-50%);}
-.chakra-dot{
-  position:absolute;
-  width:10px;height:10px;
-  background:var(--navy);
-  border-radius:50%;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-}
+  /* ── LANDING ── */
+  .landing-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+  }
 
-.home-title{
-  font-family:'Baloo 2',cursive;
-  font-size:2.8rem;
-  font-weight:800;
-  line-height:1.05;
-  color:var(--navy);
-  margin-bottom:0.4rem;
-}
-.home-title span{color:var(--saffron);}
-.home-sub{
-  font-size:1rem;
-  color:var(--muted);
-  margin-bottom:2rem;
-  font-weight:500;
-}
+  .badge {
+    display: inline-block;
+    background: rgba(57,217,138,0.12);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(57,217,138,0.2);
+    margin-bottom: 1.5rem;
+  }
 
-/* Mode cards */
-.modes{display:flex;flex-direction:column;gap:12px;margin-bottom:2rem;}
-.mode-card{
-  background:var(--card);
-  border:2px solid transparent;
-  border-radius:16px;
-  padding:1rem 1.25rem;
-  display:flex;
-  align-items:center;
-  gap:1rem;
-  cursor:pointer;
-  transition:all 0.2s;
-  box-shadow:0 2px 8px rgba(0,0,0,0.06);
-}
-.mode-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.1);}
-.mode-card.saffron:hover{border-color:var(--saffron);}
-.mode-card.navy:hover{border-color:var(--navy);}
-.mode-card.green:hover{border-color:var(--green);}
-.mode-icon{
-  width:52px;height:52px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.6rem;flex-shrink:0;
-}
-.mode-icon.saffron{background:#FFF3E0;}
-.mode-icon.navy{background:#E8EAF6;}
-.mode-icon.green{background:#E8F5E9;}
-.mode-info{flex:1;}
-.mode-title{font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:700;color:var(--text);}
-.mode-desc{font-size:0.8rem;color:var(--muted);margin-top:1px;}
-.mode-badge{
-  font-size:0.7rem;font-weight:600;
-  padding:3px 10px;border-radius:99px;
-  white-space:nowrap;
-}
-.badge-easy{background:#E8F5E9;color:#2e7d32;}
-.badge-medium{background:#FFF3E0;color:#e65100;}
-.badge-hard{background:#E8EAF6;color:#283593;}
+  .landing-box h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-.home-footer{text-align:center;font-size:0.8rem;color:var(--muted);}
+  .landing-box p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
 
-/* ── HUD ── */
-.hud{
-  display:flex;justify-content:space-between;align-items:center;
-  background:var(--card);border-radius:14px;
-  padding:0.75rem 1rem;margin-bottom:1.25rem;
-  border:1.5px solid rgba(0,0,0,0.06);
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-}
-.hud-item{text-align:center;}
-.hud-lbl{font-size:0.6rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:600;}
-.hud-val{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:800;line-height:1.1;}
-.hud-val.orange{color:var(--saffron);}
-.hud-val.navy{color:var(--navy);}
-.hud-val.green{color:var(--green);}
+  .info-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
 
-/* Timer bar */
-.timer-track{
-  background:#e5e7eb;border-radius:99px;height:7px;
-  margin-bottom:1.25rem;overflow:hidden;
-}
-.timer-fill{
-  height:100%;border-radius:99px;
-  background:linear-gradient(to right,var(--green),var(--saffron));
-  transition:width 1s linear,background 0.5s;
-}
+  .info-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
 
-/* ── Q CARD ── */
-.q-card{
-  background:var(--card);border-radius:18px;
-  padding:1.5rem;margin-bottom:1rem;
-  border:1.5px solid rgba(0,0,0,0.07);
-  box-shadow:0 3px 12px rgba(0,0,0,0.07);
-  position:relative;overflow:hidden;
-}
-.q-card::after{
-  content:'';position:absolute;
-  top:-30px;right:-30px;
-  width:100px;height:100px;
-  border:12px solid rgba(255,153,51,0.1);
-  border-radius:50%;
-  pointer-events:none;
-}
-.q-mode-tag{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:0.7rem;font-weight:600;text-transform:uppercase;
-  letter-spacing:1px;padding:3px 10px;border-radius:99px;
-  margin-bottom:0.75rem;
-}
-.tag-mcq{background:#E8EAF6;color:#283593;}
-.tag-tf{background:#FFF3E0;color:#e65100;}
-.tag-fill{background:#E8F5E9;color:#2e7d32;}
+  .info-chip span { color: var(--text); font-weight: 600; }
 
-.q-text{
-  font-family:'Baloo 2',cursive;
-  font-size:1.2rem;font-weight:700;
-  line-height:1.4;color:var(--text);
-}
-.fill-blank{
-  display:inline-block;
-  border-bottom:3px solid var(--navy);
-  min-width:80px;text-align:center;
-  color:var(--navy);font-style:italic;
-}
+  .name-field {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-size: 15px;
+    color: var(--text);
+    width: 100%;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 1.25rem;
+  }
 
-/* Options */
-.options{display:flex;flex-direction:column;gap:9px;margin-bottom:1rem;}
-.opt{
-  padding:0.8rem 1rem;
-  border-radius:12px;
-  border:2px solid #e5e7eb;
-  background:var(--card);
-  color:var(--text);
-  font-family:'Hind',sans-serif;
-  font-size:0.95rem;font-weight:500;
-  cursor:pointer;
-  text-align:left;
-  transition:all 0.15s;
-  display:flex;align-items:center;gap:10px;
-}
-.opt:hover:not(:disabled){
-  border-color:var(--navy);
-  background:#F0F4FF;
-  transform:translateX(4px);
-}
-.opt-letter{
-  width:24px;height:24px;border-radius:6px;
-  background:#f3f4f6;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.75rem;font-weight:700;color:var(--muted);
-  flex-shrink:0;transition:all 0.15s;
-}
-.opt.correct{border-color:var(--correct);background:var(--correct-bg);}
-.opt.correct .opt-letter{background:var(--correct);color:white;}
-.opt.wrong{border-color:var(--wrong);background:var(--wrong-bg);}
-.opt.wrong .opt-letter{background:var(--wrong);color:white;}
-.opt.reveal{border-color:var(--correct);background:var(--correct-bg);}
-.opt.reveal .opt-letter{background:var(--correct);color:white;}
+  .name-field:focus { border-color: rgba(57,217,138,0.5); }
+  .name-field::placeholder { color: var(--text-muted); }
 
-/* True/False */
-.tf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem;}
-.tf-btn{
-  padding:1.2rem 1rem;border-radius:14px;
-  border:2.5px solid #e5e7eb;background:var(--card);
-  font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:700;
-  cursor:pointer;transition:all 0.18s;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-}
-.tf-btn:hover:not(:disabled){transform:scale(1.03);}
-.tf-btn.true-btn:hover:not(:disabled){border-color:var(--correct);background:var(--correct-bg);color:var(--correct);}
-.tf-btn.false-btn:hover:not(:disabled){border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);}
-.tf-btn.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);}
-.tf-btn.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);}
-.tf-btn.reveal{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);}
-.tf-icon{font-size:2rem;}
+  .btn-primary {
+    background: var(--accent);
+    color: #0d1117;
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 32px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.02em;
+  }
 
-/* Fill input */
-.fill-row{display:flex;gap:8px;margin-bottom:1rem;}
-.fill-input{
-  flex:1;padding:0.75rem 1rem;
-  border:2px solid #e5e7eb;border-radius:12px;
-  font-family:'Hind',sans-serif;font-size:1rem;
-  color:var(--text);background:var(--card);
-  outline:none;transition:border 0.15s;
-}
-.fill-input:focus{border-color:var(--navy);}
-.fill-input.correct{border-color:var(--correct);background:var(--correct-bg);}
-.fill-input.wrong{border-color:var(--wrong);background:var(--wrong-bg);}
-.fill-submit{
-  padding:0.75rem 1.25rem;border-radius:12px;
-  border:none;background:var(--navy);color:white;
-  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;
-  cursor:pointer;transition:all 0.15s;
-}
-.fill-submit:hover{background:#1a237e;transform:scale(1.03);}
-.fill-submit:disabled{background:#9ca3af;cursor:default;transform:none;}
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; transform: none; }
 
-/* Feedback */
-.feedback{
-  padding:0.75rem 1rem;border-radius:12px;
-  font-size:0.9rem;font-weight:500;line-height:1.5;
-  margin-bottom:1rem;display:none;
-}
-.feedback.show{display:block;animation:fadeUp 0.3s ease;}
-.feedback.good{background:var(--correct-bg);color:#166534;border:1px solid #bbf7d0;}
-.feedback.bad{background:var(--wrong-bg);color:#991b1b;border:1px solid #fecaca;}
+  /* ── QUIZ ── */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
 
-/* Streak */
-.streak-banner{
-  text-align:center;
-  font-family:'Baloo 2',cursive;
-  font-size:1.1rem;font-weight:700;
-  color:var(--saffron);
-  margin-bottom:0.75rem;
-  min-height:1.6rem;
-  animation:pulse 0.5s ease;
-}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+  .q-counter {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
 
-.next-btn{
-  width:100%;padding:0.85rem;
-  border-radius:14px;border:none;
-  background:var(--navy);color:white;
-  font-family:'Baloo 2',cursive;
-  font-size:1.1rem;font-weight:700;
-  cursor:pointer;transition:all 0.18s;
-  display:none;
-}
-.next-btn.show{display:block;animation:fadeUp 0.3s ease;}
-.next-btn:hover{background:#1a237e;transform:translateY(-1px);}
-.next-btn:active{transform:translateY(0);}
+  .q-counter strong { color: var(--accent); }
 
-/* ── RESULT ── */
-.result-wrap{text-align:center;padding:1.5rem 0;}
-.result-medal{font-size:5rem;margin-bottom:0.5rem;animation:bounce 1.2s ease infinite;}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-.result-title{
-  font-family:'Baloo 2',cursive;
-  font-size:2.2rem;font-weight:800;
-  color:var(--navy);margin-bottom:0.25rem;
-}
-.result-msg{font-size:1rem;color:var(--muted);margin-bottom:1.5rem;font-weight:500;}
+  .timer-ring {
+    position: relative;
+    width: 56px;
+    height: 56px;
+  }
 
-.score-display{
-  background:var(--card);border-radius:18px;
-  padding:1.5rem;margin-bottom:1.5rem;
-  border:1.5px solid rgba(0,0,0,0.07);
-  display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;
-}
-.score-item{}
-.score-num{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;}
-.score-num.orange{color:var(--saffron);}
-.score-num.navy{color:var(--navy);}
-.score-num.green{color:var(--green);}
-.score-lbl{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;}
+  .timer-ring svg { transform: rotate(-90deg); }
 
-.star-row{font-size:2rem;letter-spacing:6px;margin-bottom:1.5rem;}
+  .timer-ring circle {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
 
-.result-btns{display:flex;gap:10px;}
-.btn-again{
-  flex:1;padding:0.85rem;
-  border-radius:14px;border:none;
-  background:var(--saffron);color:white;
-  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;
-  cursor:pointer;transition:all 0.18s;
-}
-.btn-again:hover{background:#e8851f;transform:translateY(-1px);}
-.btn-home{
-  flex:1;padding:0.85rem;
-  border-radius:14px;border:2px solid var(--navy);
-  background:transparent;color:var(--navy);
-  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:700;
-  cursor:pointer;transition:all 0.18s;
-}
-.btn-home:hover{background:var(--navy);color:white;}
+  .timer-ring .bg { stroke: var(--surface2); }
+  .timer-ring .fg { stroke: var(--accent); transition: stroke-dashoffset 1s linear, stroke 0.3s; }
 
-/* Confetti */
-.confetti-piece{
-  position:fixed;
-  width:8px;height:8px;
-  animation:fall linear forwards;
-  pointer-events:none;
-  z-index:999;
-  border-radius:1px;
-}
-@keyframes fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(540deg);opacity:0}}
+  .timer-num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
 
-/* Back btn */
-.back-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:0.85rem;color:var(--muted);font-weight:600;
-  cursor:pointer;margin-bottom:1rem;
-  background:none;border:none;padding:0;
-  font-family:'Hind',sans-serif;
-}
-.back-btn:hover{color:var(--navy);}
+  .progress-track {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 99px;
+    margin-bottom: 1.75rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .q-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .q-text {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+
+  .option:hover:not(:disabled) { border-color: rgba(57,217,138,0.4); background: rgba(57,217,138,0.05); transform: translateX(3px); }
+  .option:disabled { cursor: default; }
+
+  .opt-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .option.correct { background: rgba(57,217,138,0.1); border-color: var(--accent); }
+  .option.correct .opt-letter { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+
+  .option.wrong { background: rgba(230,57,70,0.1); border-color: var(--danger); }
+  .option.wrong .opt-letter { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  .option.reveal { opacity: 0.4; }
+
+  .feedback-bar {
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    border-left: 3px solid var(--accent);
+    margin-top: 1rem;
+    display: none;
+  }
+
+  .feedback-bar.wrong { border-left-color: var(--danger); }
+  .feedback-bar.show { display: block; animation: fadeUp 0.25s ease; }
+
+  .feedback-bar strong { color: var(--text); }
+
+  .nav-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  .btn-next {
+    background: var(--accent);
+    color: #0d1117;
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 28px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .btn-next:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-next.show { display: block; animation: fadeUp 0.2s ease; }
+
+  /* ── REPORT ── */
+  .report-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .student-name {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .score-display {
+    font-family: var(--mono);
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+  }
+
+  .score-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+  .score-pills {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+
+  .pill.correct { background: rgba(57,217,138,0.15); color: var(--accent); }
+  .pill.wrong { background: rgba(230,57,70,0.15); color: var(--danger); }
+  .pill.pct { background: rgba(0,180,216,0.15); color: var(--accent2); }
+
+  .review-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 2rem; }
+
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid var(--border);
+  }
+
+  .review-item.correct-item { border-left-color: var(--accent); }
+  .review-item.wrong-item { border-left-color: var(--danger); }
+
+  .review-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+  }
+
+  .review-qnum {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .review-q { font-size: 14px; font-weight: 500; line-height: 1.45; flex: 1; }
+
+  .status-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .status-dot.ok { background: rgba(57,217,138,0.2); color: var(--accent); }
+  .status-dot.no { background: rgba(230,57,70,0.2); color: var(--danger); }
+
+  .review-answers { display: flex; flex-direction: column; gap: 5px; margin-bottom: 0.75rem; }
+
+  .ans-row {
+    font-size: 12px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .ans-row .lbl { color: var(--text-muted); flex-shrink: 0; }
+  .ans-row .val { color: var(--text); }
+  .ans-row .val.ok { color: var(--accent); }
+  .ans-row .val.no { color: var(--danger); text-decoration: line-through; }
+
+  .review-exp {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn-restart {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 28px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    width: 100%;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Timeout overlay */
+  .timeout-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(230,57,70,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    animation: flashIn 0.2s ease;
+    pointer-events: none;
+  }
+
+  .timeout-flash span {
+    background: var(--danger);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: var(--radius);
+    letter-spacing: 0.05em;
+  }
+
+  @keyframes flashIn { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 600px) {
+    .screen { padding: 1rem; }
+    .landing-box { padding: 2rem 1.5rem; }
+    .landing-box h1 { font-size: 1.6rem; }
+    .question-card { padding: 1.5rem; }
+    .q-text { font-size: 15px; }
+    .score-display { font-size: 3rem; }
+  }
 </style>
 </head>
 <body>
 
-<div class="tricolor-bar"></div>
-
-<div id="app">
-
-  <!-- HOME -->
-  <div class="screen active" id="home">
-    <div class="home-hero">
-      <div class="chakra"><div class="chakra-dot"></div></div>
-      <div class="home-title">Constitution<br><span>Quest!</span></div>
-      <div class="home-sub">Learn about India's Constitution — the fun way!</div>
+<!-- LANDING SCREEN -->
+<div class="screen active" id="screen-landing">
+  <div class="landing-box">
+    <div class="badge">Biology · Class VII</div>
+    <h1>Vertebrates<br>Classification Quiz</h1>
+    <p>Test your knowledge of the five vertebrate classes — Pisces, Amphibia, Reptilia, Aves, and Mammalia. Answer 10 questions, one minute each.</p>
+    <div class="info-row">
+      <div class="info-chip"><span>10</span> Questions</div>
+      <div class="info-chip"><span>1 min</span> per question</div>
+      <div class="info-chip"><span>MCQ</span> Format</div>
     </div>
-
-    <div class="modes">
-      <div class="mode-card saffron" onclick="startMode('mcq')">
-        <div class="mode-icon saffron">🏛️</div>
-        <div class="mode-info">
-          <div class="mode-title">Quiz Challenge</div>
-          <div class="mode-desc">8 multiple-choice questions with a timer</div>
-        </div>
-        <span class="mode-badge badge-easy">Easy</span>
-      </div>
-      <div class="mode-card navy" onclick="startMode('tf')">
-        <div class="mode-icon navy">⚖️</div>
-        <div class="mode-info">
-          <div class="mode-title">True or False</div>
-          <div class="mode-desc">7 tricky statements — spot what's right!</div>
-        </div>
-        <span class="mode-badge badge-medium">Medium</span>
-      </div>
-      <div class="mode-card green" onclick="startMode('fill')">
-        <div class="mode-icon green">✍️</div>
-        <div class="mode-info">
-          <div class="mode-title">Fill in the Blank</div>
-          <div class="mode-desc">Type the missing word from the chapter</div>
-        </div>
-        <span class="mode-badge badge-hard">Hard</span>
-      </div>
-    </div>
-    <div class="home-footer">Based on Chapter 1: The Constitution of India</div>
+    <input type="text" class="name-field" id="student-name" placeholder="Enter your full name to begin…" maxlength="60" autocomplete="off" />
+    <button class="btn-primary" id="start-btn" onclick="startQuiz()" disabled>Start Exam →</button>
   </div>
+</div>
 
-  <!-- GAME -->
-  <div class="screen" id="game">
-    <button class="back-btn" onclick="goHome()">← Back to menu</button>
-
-    <div class="hud">
-      <div class="hud-item">
-        <div class="hud-lbl">Score</div>
-        <div class="hud-val orange" id="hud-score">0</div>
-      </div>
-      <div class="hud-item">
-        <div class="hud-lbl">Question</div>
-        <div class="hud-val navy" id="hud-q">1/8</div>
-      </div>
-      <div class="hud-item">
-        <div class="hud-lbl">Streak</div>
-        <div class="hud-val green" id="hud-streak">0🔥</div>
-      </div>
+<!-- QUIZ SCREEN -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <div>
+      <div class="q-counter">Question <strong id="q-num">1</strong> of <strong>10</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:3px;" id="student-tag"></div>
     </div>
-
-    <div class="timer-track" id="timer-track" style="display:none">
-      <div class="timer-fill" id="timer-fill" style="width:100%"></div>
-    </div>
-
-    <div class="streak-banner" id="streak-banner"></div>
-
-    <div class="q-card">
-      <div class="q-mode-tag" id="q-tag">MCQ</div>
-      <div class="q-text" id="q-text"></div>
-    </div>
-
-    <div id="options-area"></div>
-    <div class="feedback" id="feedback"></div>
-    <button class="next-btn" id="next-btn" onclick="nextQ()">Next →</button>
-  </div>
-
-  <!-- RESULT -->
-  <div class="screen" id="result">
-    <div class="result-wrap">
-      <div class="result-medal" id="res-medal">🏆</div>
-      <div class="result-title" id="res-title">Well done!</div>
-      <div class="result-msg" id="res-msg">You answered every question!</div>
-      <div class="star-row" id="star-row">⭐⭐⭐</div>
-      <div class="score-display">
-        <div class="score-item">
-          <div class="score-num orange" id="res-score">0</div>
-          <div class="score-lbl">Points</div>
-        </div>
-        <div class="score-item">
-          <div class="score-num green" id="res-correct">0</div>
-          <div class="score-lbl">Correct</div>
-        </div>
-        <div class="score-item">
-          <div class="score-num navy" id="res-best">0</div>
-          <div class="score-lbl">Best Streak</div>
-        </div>
-      </div>
-      <div class="result-btns">
-        <button class="btn-again" onclick="replayMode()">Play Again</button>
-        <button class="btn-home" onclick="goHome()">Main Menu</button>
-      </div>
+    <div class="timer-ring">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <circle class="bg" cx="28" cy="28" r="24" />
+        <circle class="fg" id="timer-arc" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0" />
+      </svg>
+      <div class="timer-num" id="timer-num">60</div>
     </div>
   </div>
 
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label" id="q-class-label"></div>
+    <div class="q-text" id="q-text"></div>
+  </div>
+
+  <div class="options-grid" id="options-grid"></div>
+  <div class="feedback-bar" id="feedback-bar"></div>
+
+  <div class="nav-row">
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next →</button>
+  </div>
+</div>
+
+<!-- REPORT SCREEN -->
+<div class="screen" id="screen-report">
+  <div class="report-header">
+    <div class="student-name" id="report-name"></div>
+    <div class="score-display" id="report-score"></div>
+    <div class="score-sub">out of 10 questions</div>
+    <div class="score-pills">
+      <div class="pill correct" id="pill-correct"></div>
+      <div class="pill wrong" id="pill-wrong"></div>
+      <div class="pill pct" id="pill-pct"></div>
+    </div>
+  </div>
+
+  <div class="review-list" id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">↺ Restart Quiz</button>
 </div>
 
 <script>
-const MCQ = [
-  {q:"In earlier times, most countries were governed by:", opts:["Elected presidents","Powerful rulers or kings","Groups of citizens","Written constitutions"], ans:1, exp:"In earlier times, countries were governed by powerful rulers or kings who ruled by their personal wishes."},
-  {q:"What could change with each new ruler in ancient times?", opts:["The country's name","The capital city","The laws that people had to follow","The national language"], ans:2, exp:"People were subject to laws that could change with each successive ruler — there was no stable set of rules."},
-  {q:"A constitution clearly states the rights and duties of:", opts:["Only government ministers","Only the military","Citizens, and powers of the government","Foreign countries"], ans:2, exp:"A constitution clearly states the rights and duties of citizens as well as the powers of the government."},
-  {q:"The constitution is called the country's _____ authority.", opts:["Temporary","Local","Regional","Supreme (highest)"], ans:3, exp:"The constitution is the supreme (highest) authority of the country. Both government and people must follow it."},
-  {q:"When did India's Constitution come into force?", opts:["15 August 1947","26 November 1949","26 January 1950","2 October 1950"], ans:2, exp:"The Constitution of independent India came into force on 26 January 1950 — now celebrated as Republic Day!"},
-  {q:"What did India become on 26 January 1950?", opts:["A British colony","A monarchy","A military state","A democratic republic"], ans:3, exp:"On 26 January 1950, India became a democratic republic — meaning power belongs to the people!"},
-  {q:"Who framed the Constitution of India?", opts:["The Supreme Court","Parliament of India","The Constituent Assembly","The President"], ans:2, exp:"India's Constitution was framed by the Constituent Assembly, a special body created for this purpose."},
-  {q:"The members of the Constituent Assembly were:", opts:["Foreign legal experts","Only judges","Only lawyers","Representatives of the Indian people"], ans:3, exp:"The Constituent Assembly's members were all representatives of the Indian people, making the Constitution truly people-driven."}
+const questions = [
+  {
+    q: "Which class of vertebrates breathes through gills?",
+    cls: "Class Pisces",
+    options: ["Class Amphibia", "Class Pisces", "Class Reptilia", "Class Mammalia"],
+    answer: 1,
+    explanation: "Class Pisces (fish) breathe exclusively through gills. Examples include rohu, dogfish, catla, trout, stingray, and electric ray."
+  },
+  {
+    q: "Which vertebrate class has moist, slimy, and slippery skin?",
+    cls: "Class Amphibia",
+    options: ["Class Reptilia", "Class Aves", "Class Amphibia", "Class Pisces"],
+    answer: 2,
+    explanation: "Amphibians have moist, slimy, slippery skin. This helps them breathe through their skin in addition to their lungs."
+  },
+  {
+    q: "What is the method of reproduction in Class Mammalia?",
+    cls: "Class Mammalia",
+    options: ["Lay eggs in water", "Lay eggs on land", "Give birth to young ones", "Lay eggs and incubate"],
+    answer: 2,
+    explanation: "Mammals give birth to live young ones (viviparous). This distinguishes them from all other vertebrate classes, which lay eggs."
+  },
+  {
+    q: "Which of the following is a warm-blooded vertebrate?",
+    cls: "Body Temperature",
+    options: ["Frog", "Lizard", "Crocodile", "Parrot"],
+    answer: 3,
+    explanation: "Parrots belong to Class Aves (birds), which are warm-blooded. Frogs (Amphibia), lizards and crocodiles (Reptilia) are all cold-blooded."
+  },
+  {
+    q: "A salamander belongs to which class?",
+    cls: "Class Amphibia",
+    options: ["Class Pisces", "Class Reptilia", "Class Amphibia", "Class Mammalia"],
+    answer: 2,
+    explanation: "Salamanders are amphibians. Along with frogs and toads, they are classic examples of Class Amphibia."
+  },
+  {
+    q: "Which class has dry, cornified skin as its body covering?",
+    cls: "Class Reptilia",
+    options: ["Class Pisces", "Class Amphibia", "Class Aves", "Class Reptilia"],
+    answer: 3,
+    explanation: "Class Reptilia is characterized by dry, cornified (hardened, scale-like) skin. Examples: lizard, tortoise, turtle, snake, crocodile."
+  },
+  {
+    q: "What type of body covering is found in Class Aves?",
+    cls: "Class Aves",
+    options: ["Scales and fins", "Hair or fur", "Moist slippery skin", "Feathers"],
+    answer: 3,
+    explanation: "Birds (Class Aves) are covered with feathers. Examples: parrot, crow, pigeon, penguin, sparrow."
+  },
+  {
+    q: "Which two classes lay eggs in water?",
+    cls: "Reproduction",
+    options: ["Class Pisces and Class Amphibia", "Class Reptilia and Class Aves", "Class Mammalia and Class Pisces", "Class Aves and Class Amphibia"],
+    answer: 0,
+    explanation: "Both Class Pisces and Class Amphibia lay their eggs in water. Reptiles and birds lay eggs on land, while mammals give birth to live young."
+  },
+  {
+    q: "Stingray and electric ray are examples of which class?",
+    cls: "Class Pisces",
+    options: ["Class Reptilia", "Class Amphibia", "Class Pisces", "Class Aves"],
+    answer: 2,
+    explanation: "Stingray and electric ray are fish, so they belong to Class Pisces. Other examples from the chart include rohu, dogfish, catla, and trout."
+  },
+  {
+    q: "Which class has webbed feet and 4 legs?",
+    cls: "Legs & Feet",
+    options: ["Class Pisces", "Class Reptilia", "Class Mammalia", "Class Amphibia"],
+    answer: 3,
+    explanation: "Class Amphibia has 4 webbed feet, which help them move in both land and water environments — matching their habitat of land and water."
+  }
 ];
 
-const TF = [
-  {q:"In earlier times, most countries were governed by elected presidents.", ans:false, exp:"False! They were governed by powerful rulers or kings, not elected presidents."},
-  {q:"Under ancient rulers, laws were permanent and could not change.", ans:false, exp:"False! Laws could change with each successive ruler. This was a major problem."},
-  {q:"A constitution states the rights and duties of citizens.", ans:true, exp:"True! A constitution clearly states rights and duties of citizens as well as powers of the government."},
-  {q:"The constitution is the country's supreme (highest) authority.", ans:true, exp:"True! The constitution is the supreme authority — both the government and people must abide by it."},
-  {q:"India's Constitution came into force on 15 August 1947.", ans:false, exp:"False! It came into force on 26 January 1950, not on Independence Day (15 August 1947)."},
-  {q:"India became a democratic republic on 26 January 1950.", ans:true, exp:"True! On this day India's Constitution came into force, making India a democratic republic."},
-  {q:"The Constitution of India was written by the Parliament.", ans:false, exp:"False! It was framed by the Constituent Assembly, a special body whose members represented the Indian people."}
-];
+const TOTAL_TIME = 60;
+const CIRCUMFERENCE = 150.8;
 
-const FILL = [
-  {before:"In earlier times, countries were governed by powerful rulers or", blank:"kings", after:"who ruled by their personal wishes.", hint:"Hint: another word for monarch"},
-  {before:"People were subject to laws that could change with each successive", blank:"ruler", after:".", hint:"Hint: the person who governs"},
-  {before:"A constitution is the country's", blank:"supreme", after:"(highest) authority.", hint:"Hint: means 'highest'"},
-  {before:"The constitution of independent India came into force on 26 January", blank:"1950", after:".", hint:"Hint: a year in the 20th century"},
-  {before:"On 26 January 1950, India became a democratic", blank:"republic", after:".", hint:"Hint: a type of government"},
-  {before:"The Constitution of India was framed by the Constituent", blank:"Assembly", after:", whose members represented the people.", hint:"Hint: a group that meets for a purpose"},
-  {before:"The members of the Constituent Assembly were all", blank:"representatives", after:"of the Indian people.", hint:"Hint: people chosen to speak for others"}
-];
+let studentName = '';
+let current = 0;
+let score = 0;
+let answers = [];
+let timerInterval = null;
+let timeLeft = TOTAL_TIME;
+let answered = false;
 
-let mode='', questions=[], qIdx=0, score=0, streak=0, bestStreak=0, correct=0, answered=false;
-let timerVal=15, timerInterval;
+// Name input enable/disable start button
+document.getElementById('student-name').addEventListener('input', function() {
+  document.getElementById('start-btn').disabled = this.value.trim().length < 2;
+});
 
-function goHome(){
-  clearInterval(timerInterval);
-  show('home');
-}
+document.getElementById('student-name').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && this.value.trim().length >= 2) startQuiz();
+});
 
-function startMode(m){
-  mode=m;
-  qIdx=0; score=0; streak=0; bestStreak=0; correct=0; answered=false;
-  if(m==='mcq') questions=[...MCQ].sort(()=>Math.random()-0.5);
-  else if(m==='tf') questions=[...TF].sort(()=>Math.random()-0.5);
-  else questions=[...FILL].sort(()=>Math.random()-0.5);
-  show('game');
-  renderQ();
-}
-
-function replayMode(){ startMode(mode); }
-
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function renderQ(){
-  if(qIdx>=questions.length){ endGame(); return; }
-  answered=false;
-  const q=questions[qIdx];
-  const total=questions.length;
-
-  document.getElementById('hud-score').textContent=score;
-  document.getElementById('hud-q').textContent=`${qIdx+1}/${total}`;
-  document.getElementById('hud-streak').textContent=`${streak}🔥`;
-  document.getElementById('streak-banner').textContent='';
-  document.getElementById('feedback').className='feedback';
-  document.getElementById('feedback').textContent='';
-  document.getElementById('next-btn').className='next-btn';
-
-  const area=document.getElementById('options-area');
-  area.innerHTML='';
-
-  if(mode==='mcq'){
-    document.getElementById('q-tag').textContent='Multiple Choice';
-    document.getElementById('q-tag').className='q-mode-tag tag-mcq';
-    document.getElementById('q-text').textContent=q.q;
-    document.getElementById('timer-track').style.display='block';
-    startTimer(15);
-    const div=document.createElement('div');
-    div.className='options';
-    const letters=['A','B','C','D'];
-    q.opts.forEach((o,i)=>{
-      const b=document.createElement('button');
-      b.className='opt';
-      b.innerHTML=`<span class="opt-letter">${letters[i]}</span>${o}`;
-      b.onclick=()=>pickMCQ(i,b);
-      div.appendChild(b);
-    });
-    area.appendChild(div);
-
-  } else if(mode==='tf'){
-    document.getElementById('q-tag').textContent='True or False';
-    document.getElementById('q-tag').className='q-mode-tag tag-tf';
-    document.getElementById('q-text').textContent=q.q;
-    document.getElementById('timer-track').style.display='none';
-    clearInterval(timerInterval);
-    const row=document.createElement('div');
-    row.className='tf-row';
-    const t=document.createElement('button');
-    t.className='tf-btn true-btn';
-    t.innerHTML='<span class="tf-icon">✅</span>TRUE';
-    t.onclick=()=>pickTF(true,t,document.querySelector('.false-btn'));
-    const f=document.createElement('button');
-    f.className='tf-btn false-btn';
-    f.innerHTML='<span class="tf-icon">❌</span>FALSE';
-    f.onclick=()=>pickTF(false,f,t);
-    row.appendChild(t); row.appendChild(f);
-    area.appendChild(row);
-
-  } else {
-    document.getElementById('q-tag').textContent='Fill in the Blank';
-    document.getElementById('q-tag').className='q-mode-tag tag-fill';
-    document.getElementById('q-text').innerHTML=`${q.before} <span class="fill-blank">______</span> ${q.after}`;
-    document.getElementById('timer-track').style.display='none';
-    clearInterval(timerInterval);
-    const hint=document.createElement('div');
-    hint.style.cssText='font-size:0.8rem;color:var(--muted);margin-bottom:8px;font-style:italic;';
-    hint.textContent=q.hint;
-    area.appendChild(hint);
-    const row=document.createElement('div');
-    row.className='fill-row';
-    const inp=document.createElement('input');
-    inp.className='fill-input';
-    inp.placeholder='Type your answer...';
-    inp.id='fill-inp';
-    inp.onkeydown=(e)=>{ if(e.key==='Enter') submitFill(); };
-    const btn=document.createElement('button');
-    btn.className='fill-submit';
-    btn.id='fill-btn';
-    btn.textContent='Check';
-    btn.onclick=submitFill;
-    row.appendChild(inp); row.appendChild(btn);
-    area.appendChild(row);
-    setTimeout(()=>inp.focus(),100);
-  }
+function startQuiz() {
+  studentName = document.getElementById('student-name').value.trim();
+  if (studentName.length < 2) return;
+  current = 0; score = 0; answers = []; answered = false;
+  document.getElementById('student-tag').textContent = studentName;
+  show('screen-quiz');
+  loadQuestion();
 }
 
-function startTimer(sec){
-  clearInterval(timerInterval);
-  timerVal=sec;
-  const fill=document.getElementById('timer-fill');
-  fill.style.width='100%';
-  fill.style.background='linear-gradient(to right,var(--green),var(--saffron))';
-  timerInterval=setInterval(()=>{
-    timerVal--;
-    const pct=(timerVal/sec)*100;
-    fill.style.width=pct+'%';
-    if(pct<30) fill.style.background='linear-gradient(to right,#ef4444,#f97316)';
-    if(timerVal<=0){ clearInterval(timerInterval); timeUp(); }
-  },1000);
-}
+function loadQuestion() {
+  answered = false;
+  const q = questions[current];
+  const letters = ['A', 'B', 'C', 'D'];
 
-function timeUp(){
-  if(answered) return;
-  answered=true;
-  streak=0;
-  document.getElementById('hud-streak').textContent='0🔥';
-  const q=questions[qIdx];
-  document.querySelectorAll('.opt').forEach((b,i)=>{
-    b.disabled=true;
-    if(i===q.ans) b.classList.add('reveal');
+  document.getElementById('q-num').textContent = current + 1;
+  document.getElementById('q-class-label').textContent = q.cls;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('progress-fill').style.width = ((current / questions.length) * 100) + '%';
+
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
   });
-  showFeedback(false, '⏰ Time\'s up! ' + q.exp);
+
+  const fb = document.getElementById('feedback-bar');
+  fb.className = 'feedback-bar';
+  fb.innerHTML = '';
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.className = 'btn-next';
+  nextBtn.textContent = current === questions.length - 1 ? 'Finish Exam →' : 'Next →';
+
+  startTimer();
 }
 
-function pickMCQ(i,btn){
-  if(answered) return;
-  answered=true;
+function startTimer() {
   clearInterval(timerInterval);
-  const q=questions[qIdx];
-  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
-  if(i===q.ans){
-    btn.classList.add('correct');
-    handleCorrect(q.exp);
+  timeLeft = TOTAL_TIME;
+  updateTimerUI();
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const arc = document.getElementById('timer-arc');
+  const num = document.getElementById('timer-num');
+  const pct = timeLeft / TOTAL_TIME;
+  arc.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+  num.textContent = timeLeft;
+
+  if (timeLeft <= 15) {
+    arc.style.stroke = '#e63946';
+    num.style.color = '#e63946';
+  } else if (timeLeft <= 30) {
+    arc.style.stroke = '#f4a261';
+    num.style.color = '#f4a261';
   } else {
-    btn.classList.add('wrong');
-    document.querySelectorAll('.opt')[q.ans].classList.add('reveal');
-    handleWrong(q.exp);
+    arc.style.stroke = '#39d98a';
+    num.style.color = 'var(--text)';
   }
 }
 
-function pickTF(chosen,clickedBtn,otherBtn){
-  if(answered) return;
-  answered=true;
-  const q=questions[qIdx];
-  clickedBtn.disabled=true; otherBtn.disabled=true;
-  if(chosen===q.ans){
-    clickedBtn.classList.add('correct');
-    handleCorrect(q.exp);
-  } else {
-    clickedBtn.classList.add('wrong');
-    otherBtn.classList.add('reveal');
-    handleWrong(q.exp);
-  }
+function timeUp() {
+  if (answered) return;
+  answered = true;
+
+  // Show timeout flash
+  const flash = document.createElement('div');
+  flash.className = 'timeout-flash';
+  flash.innerHTML = '<span>⏱ TIME UP</span>';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 1200);
+
+  answers.push({ selected: null, correct: false });
+
+  // Reveal correct answer
+  const btns = document.querySelectorAll('.option');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === questions[current].answer) btn.classList.add('correct');
+    else btn.classList.add('reveal');
+  });
+
+  showFeedback(false);
+  document.getElementById('btn-next').classList.add('show');
 }
 
-function submitFill(){
-  if(answered) return;
-  const inp=document.getElementById('fill-inp');
-  const btn=document.getElementById('fill-btn');
-  const val=inp.value.trim().toLowerCase();
-  if(!val) return;
-  answered=true;
-  inp.disabled=true; btn.disabled=true;
-  const q=questions[qIdx];
-  const correct=q.blank.toLowerCase();
-  if(val===correct || correct.includes(val) || val.includes(correct)){
-    inp.classList.add('correct');
-    inp.value=q.blank;
-    handleCorrect('✓ Correct answer: "' + q.blank + '". ' + q.exp);
-  } else {
-    inp.classList.add('wrong');
-    handleWrong('The answer was "' + q.blank + '". ' + q.exp);
-  }
-}
-
-function handleCorrect(exp){
-  streak++;
-  correct++;
-  if(streak>bestStreak) bestStreak=streak;
-  const bonus=streak>=3?2:1;
-  const pts=10*bonus;
-  score+=pts;
-  document.getElementById('hud-score').textContent=score;
-  document.getElementById('hud-streak').textContent=`${streak}🔥`;
-  if(streak>=3){
-    document.getElementById('streak-banner').textContent=`🔥 ${streak} in a row! +${pts} pts`;
-  }
-  showFeedback(true,'✓ Correct! ' + (streak>=3?`(+${pts} bonus!) `:'') + exp);
-}
-
-function handleWrong(exp){
-  streak=0;
-  document.getElementById('hud-streak').textContent='0🔥';
-  showFeedback(false,'✗ Not quite. ' + exp);
-}
-
-function showFeedback(good, msg){
-  const fb=document.getElementById('feedback');
-  fb.textContent=msg;
-  fb.className='feedback show ' + (good?'good':'bad');
-  document.getElementById('next-btn').className='next-btn show';
-  document.getElementById('next-btn').textContent=qIdx+1>=questions.length?'See Results →':'Next →';
-}
-
-function nextQ(){ qIdx++; renderQ(); }
-
-function endGame(){
+function selectAnswer(i) {
+  if (answered) return;
+  answered = true;
   clearInterval(timerInterval);
-  show('result');
-  document.getElementById('res-score').textContent=score;
-  document.getElementById('res-correct').textContent=`${correct}/${questions.length}`;
-  document.getElementById('res-best').textContent=bestStreak;
-  const pct=correct/questions.length;
-  let medal,title,msg,stars;
-  if(pct===1){medal='🏆';title='Perfect Score!';msg='You are a Constitution Champion! Incredible!';stars='⭐⭐⭐';confetti();}
-  else if(pct>=0.75){medal='🥇';title='Excellent!';msg='You know the Constitution really well!';stars='⭐⭐⭐';confetti();}
-  else if(pct>=0.5){medal='🥈';title='Good Job!';msg='Keep reading the chapter to score higher!';stars='⭐⭐';}
-  else{medal='📖';title='Keep Learning!';msg='Read the chapter again — you will do better!';stars='⭐';}
-  document.getElementById('res-medal').textContent=medal;
-  document.getElementById('res-title').textContent=title;
-  document.getElementById('res-msg').textContent=msg;
-  document.getElementById('star-row').textContent=stars;
+
+  const q = questions[current];
+  const isCorrect = i === q.answer;
+  if (isCorrect) score++;
+
+  answers.push({ selected: i, correct: isCorrect });
+
+  const btns = document.querySelectorAll('.option');
+  btns.forEach((btn, idx) => {
+    btn.disabled = true;
+    if (idx === q.answer) btn.classList.add('correct');
+    else if (idx === i && !isCorrect) btn.classList.add('wrong');
+    else btn.classList.add('reveal');
+  });
+
+  showFeedback(isCorrect);
+  document.getElementById('btn-next').classList.add('show');
 }
 
-function confetti(){
-  const cols=['#FF9933','#138808','#000080','#E8C547','#ffffff','#ff4444'];
-  for(let i=0;i<70;i++){
-    setTimeout(()=>{
-      const c=document.createElement('div');
-      c.className='confetti-piece';
-      c.style.cssText=`left:${Math.random()*100}vw;background:${cols[~~(Math.random()*cols.length)]};width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;border-radius:${Math.random()>0.4?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*0.8}s`;
-      document.body.appendChild(c);
-      setTimeout(()=>c.remove(),4000);
-    },i*25);
+function showFeedback(isCorrect) {
+  const q = questions[current];
+  const fb = document.getElementById('feedback-bar');
+  fb.className = 'feedback-bar show' + (isCorrect ? '' : ' wrong');
+  fb.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect.'}</strong> ${q.explanation}`;
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) {
+    showReport();
+  } else {
+    loadQuestion();
   }
+}
+
+function showReport() {
+  clearInterval(timerInterval);
+  document.getElementById('progress-fill').style.width = '100%';
+
+  const wrongCount = questions.length - score;
+  const pct = Math.round((score / questions.length) * 100);
+
+  document.getElementById('report-name').textContent = studentName + "'s Result";
+  document.getElementById('report-score').textContent = score + '/10';
+  document.getElementById('pill-correct').textContent = `✓ ${score} correct`;
+  document.getElementById('pill-wrong').textContent = `✗ ${wrongCount} wrong`;
+  document.getElementById('pill-pct').textContent = `${pct}% score`;
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+
+  questions.forEach((q, i) => {
+    const ans = answers[i];
+    const isCorrect = ans && ans.correct;
+    const selIdx = ans ? ans.selected : null;
+    const letters = ['A', 'B', 'C', 'D'];
+
+    const item = document.createElement('div');
+    item.className = 'review-item ' + (isCorrect ? 'correct-item' : 'wrong-item');
+
+    let yourAnswer = selIdx !== null
+      ? `${letters[selIdx]}. ${q.options[selIdx]}`
+      : 'No answer (time up)';
+
+    item.innerHTML = `
+      <div class="review-top">
+        <div class="review-qnum">Q${i + 1}</div>
+        <div class="review-q">${q.q}</div>
+        <div class="status-dot ${isCorrect ? 'ok' : 'no'}">${isCorrect ? '✓' : '✗'}</div>
+      </div>
+      <div class="review-answers">
+        <div class="ans-row"><span class="lbl">Your answer:</span><span class="val ${isCorrect ? 'ok' : 'no'}">${yourAnswer}</span></div>
+        ${!isCorrect ? `<div class="ans-row"><span class="lbl">Correct answer:</span><span class="val ok">${letters[q.answer]}. ${q.options[q.answer]}</span></div>` : ''}
+      </div>
+      <div class="review-exp">${q.explanation}</div>
+    `;
+
+    list.appendChild(item);
+  });
+
+  show('screen-report');
+  window.scrollTo(0, 0);
+}
+
+function restart() {
+  document.getElementById('student-name').value = '';
+  document.getElementById('start-btn').disabled = true;
+  show('screen-landing');
 }
 </script>
 </body>
