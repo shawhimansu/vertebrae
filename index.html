@@ -3,877 +3,698 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vertebrates Quiz</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Math Blast!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #1c2330;
-    --border: rgba(255,255,255,0.08);
-    --accent: #39d98a;
-    --accent2: #00b4d8;
-    --warn: #f4a261;
-    --danger: #e63946;
-    --text: #e6edf3;
-    --text-muted: #8b949e;
-    --radius: 14px;
-    --font: 'Sora', sans-serif;
-    --mono: 'Space Mono', monospace;
+    --bg: #0f0c2e;
+    --card: #1a1650;
+    --accent1: #ff6b6b;
+    --accent2: #ffd93d;
+    --accent3: #6bcb77;
+    --accent4: #4d96ff;
+    --accent5: #c77dff;
+    --text: #ffffff;
+    --text2: #b0b8ff;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
-    font-family: var(--font);
     background: var(--bg);
+    font-family: 'Nunito', sans-serif;
     color: var(--text);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
   }
 
-  /* Grid background */
-  body::before {
-    content: '';
+  /* Starfield */
+  .stars {
     position: fixed;
     inset: 0;
-    background-image:
-      linear-gradient(rgba(57,217,138,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(57,217,138,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
   }
+  .star {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--d) ease-in-out infinite alternate;
+    opacity: 0.5;
+  }
+  @keyframes twinkle { to { opacity: 0.1; transform: scale(0.5); } }
 
-  body::after {
-    content: '';
+  /* Planet decorations */
+  .planet {
     position: fixed;
-    top: -30%;
-    left: -20%;
-    width: 60%;
-    height: 60%;
-    background: radial-gradient(ellipse, rgba(57,217,138,0.06) 0%, transparent 70%);
+    border-radius: 50%;
     pointer-events: none;
     z-index: 0;
   }
+  .planet1 { width: 120px; height: 120px; background: radial-gradient(circle at 35% 35%, #ff9a9e, #c0392b); top: -30px; right: -30px; }
+  .planet2 { width: 80px; height: 80px; background: radial-gradient(circle at 35% 35%, #a8edea, #2980b9); bottom: 40px; left: -20px; }
+  .planet3 { width: 50px; height: 50px; background: radial-gradient(circle at 35% 35%, #ffd700, #f39c12); top: 60px; left: 60px; opacity: 0.7; }
 
-  .screen {
-    display: none;
+  /* Main wrapper */
+  #app {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 680px;
-    padding: 2rem;
-    animation: fadeUp 0.4s ease;
-  }
-
-  .screen.active { display: block; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── LANDING ── */
-  .landing-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3rem 2.5rem;
+    max-width: 480px;
+    padding: 1rem;
     text-align: center;
   }
 
-  .badge {
-    display: inline-block;
-    background: rgba(57,217,138,0.12);
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 5px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(57,217,138,0.2);
-    margin-bottom: 1.5rem;
-  }
+  /* Screens */
+  .screen { display: none; }
+  .screen.active { display: block; animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
-  .landing-box h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1.15;
-    margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, #fff 30%, var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  /* ── START SCREEN ── */
+  .logo {
+    font-family: 'Fredoka One', cursive;
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--accent2);
+    text-shadow: 0 0 30px rgba(255,217,61,0.5), 4px 4px 0 rgba(255,107,107,0.6);
+    margin-bottom: 0.25rem;
+    animation: float 3s ease-in-out infinite;
   }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-  .landing-box p {
-    color: var(--text-muted);
-    font-size: 14px;
-    line-height: 1.7;
+  .tagline {
+    font-size: 1.1rem;
+    color: var(--text2);
     margin-bottom: 2rem;
+    font-weight: 600;
   }
 
-  .info-row {
+  .rocket-emoji { font-size: 3rem; display: block; margin-bottom: 1rem; animation: rocket 2s ease-in-out infinite; }
+  @keyframes rocket { 0%,100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-12px) rotate(5deg); } }
+
+  .level-label {
+    font-size: 1rem;
+    color: var(--text2);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .level-btns {
     display: flex;
     gap: 12px;
     justify-content: center;
     margin-bottom: 2rem;
-    flex-wrap: wrap;
   }
 
-  .info-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .info-chip span { color: var(--text); font-weight: 600; }
-
-  .name-field {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 18px;
-    font-size: 15px;
-    color: var(--text);
-    width: 100%;
-    font-family: var(--font);
-    outline: none;
-    transition: border-color 0.2s;
-    margin-bottom: 1.25rem;
-  }
-
-  .name-field:focus { border-color: rgba(57,217,138,0.5); }
-  .name-field::placeholder { color: var(--text-muted); }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #0d1117;
-    font-family: var(--font);
+  .level-btn {
+    padding: 0.6rem 1.4rem;
+    border-radius: 50px;
+    border: 2.5px solid transparent;
+    background: var(--card);
+    color: var(--text2);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
     font-weight: 700;
-    font-size: 15px;
-    padding: 14px 32px;
-    border: none;
-    border-radius: var(--radius);
     cursor: pointer;
-    width: 100%;
-    transition: opacity 0.2s, transform 0.15s;
-    letter-spacing: 0.02em;
+    transition: all 0.2s;
   }
+  .level-btn:hover { transform: scale(1.05); }
+  .level-btn.selected { color: var(--bg); }
+  .level-btn[data-level="easy"].selected { background: var(--accent3); border-color: var(--accent3); }
+  .level-btn[data-level="medium"].selected { background: var(--accent2); border-color: var(--accent2); }
+  .level-btn[data-level="hard"].selected { background: var(--accent1); border-color: var(--accent1); }
 
-  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { opacity: 0.35; cursor: default; transform: none; }
+  .start-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    padding: 0.9rem 3rem;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent1), var(--accent5));
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .start-btn:hover { transform: scale(1.06) translateY(-2px); box-shadow: 0 10px 30px rgba(255,107,107,0.5); }
+  .start-btn:active { transform: scale(0.97); }
 
-  /* ── QUIZ ── */
-  .quiz-header {
+  /* ── GAME SCREEN ── */
+  .hud {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    background: var(--card);
+    border-radius: 18px;
+    padding: 0.75rem 1.25rem;
+    border: 1.5px solid rgba(255,255,255,0.08);
   }
 
-  .q-counter {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text-muted);
-  }
+  .hud-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .hud-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text2); font-weight: 700; }
+  .hud-value { font-family: 'Fredoka One', cursive; font-size: 1.6rem; line-height: 1; }
+  #score-val { color: var(--accent2); }
+  #lives-val { color: var(--accent1); letter-spacing: 2px; }
+  #q-val { color: var(--accent4); }
 
-  .q-counter strong { color: var(--accent); }
-
-  .timer-ring {
-    position: relative;
-    width: 56px;
-    height: 56px;
-  }
-
-  .timer-ring svg { transform: rotate(-90deg); }
-
-  .timer-ring circle {
-    fill: none;
-    stroke-width: 3;
-    stroke-linecap: round;
-  }
-
-  .timer-ring .bg { stroke: var(--surface2); }
-  .timer-ring .fg { stroke: var(--accent); transition: stroke-dashoffset 1s linear, stroke 0.3s; }
-
+  /* Timer ring */
+  .timer-wrap { position: relative; width: 56px; height: 56px; }
+  #timer-svg { transform: rotate(-90deg); position: absolute; top: 0; left: 0; }
+  #timer-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 5; }
+  #timer-arc { fill: none; stroke: var(--accent3); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 138; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
   .timer-num {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 700;
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
     color: var(--text);
   }
 
-  .progress-track {
-    height: 3px;
-    background: var(--surface2);
-    border-radius: 99px;
-    margin-bottom: 1.75rem;
+  /* Question card */
+  .q-card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 2rem 1.5rem 1.5rem;
+    margin-bottom: 1.25rem;
+    border: 2px solid rgba(255,255,255,0.08);
+    position: relative;
     overflow: hidden;
   }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 99px;
-    transition: width 0.4s ease;
-  }
-
-  .question-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 2rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .q-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.75rem;
-  }
-
-  .q-text {
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 1.55;
-    color: var(--text);
-  }
-
-  .options-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .option {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 18px;
-    cursor: pointer;
-    font-family: var(--font);
-    font-size: 14px;
-    color: var(--text);
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: border-color 0.15s, background 0.15s, transform 0.1s;
-  }
-
-  .option:hover:not(:disabled) { border-color: rgba(57,217,138,0.4); background: rgba(57,217,138,0.05); transform: translateX(3px); }
-  .option:disabled { cursor: default; }
-
-  .opt-letter {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-muted);
-    flex-shrink: 0;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
-  }
-
-  .option.correct { background: rgba(57,217,138,0.1); border-color: var(--accent); }
-  .option.correct .opt-letter { background: var(--accent); color: #0d1117; border-color: var(--accent); }
-
-  .option.wrong { background: rgba(230,57,70,0.1); border-color: var(--danger); }
-  .option.wrong .opt-letter { background: var(--danger); color: #fff; border-color: var(--danger); }
-
-  .option.reveal { opacity: 0.4; }
-
-  .feedback-bar {
-    background: var(--surface2);
-    border-radius: var(--radius);
-    padding: 14px 18px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--text-muted);
-    border-left: 3px solid var(--accent);
-    margin-top: 1rem;
-    display: none;
-  }
-
-  .feedback-bar.wrong { border-left-color: var(--danger); }
-  .feedback-bar.show { display: block; animation: fadeUp 0.25s ease; }
-
-  .feedback-bar strong { color: var(--text); }
-
-  .nav-row {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-  }
-
-  .btn-next {
-    background: var(--accent);
-    color: #0d1117;
-    font-family: var(--font);
-    font-weight: 700;
-    font-size: 14px;
-    padding: 12px 28px;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    display: none;
-    transition: opacity 0.2s, transform 0.15s;
-  }
-
-  .btn-next:hover { opacity: 0.88; transform: translateY(-1px); }
-  .btn-next.show { display: block; animation: fadeUp 0.2s ease; }
-
-  /* ── REPORT ── */
-  .report-header {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .student-name {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 0.5rem;
-  }
-
-  .score-display {
-    font-family: var(--mono);
-    font-size: 4rem;
-    font-weight: 700;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 0.25rem;
-  }
-
-  .score-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; }
-
-  .score-pills {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .pill {
-    font-size: 12px;
-    font-weight: 600;
-    padding: 6px 14px;
-    border-radius: 999px;
-  }
-
-  .pill.correct { background: rgba(57,217,138,0.15); color: var(--accent); }
-  .pill.wrong { background: rgba(230,57,70,0.15); color: var(--danger); }
-  .pill.pct { background: rgba(0,180,216,0.15); color: var(--accent2); }
-
-  .review-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 2rem; }
-
-  .review-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem 1.5rem;
-    border-left: 3px solid var(--border);
-  }
-
-  .review-item.correct-item { border-left-color: var(--accent); }
-  .review-item.wrong-item { border-left-color: var(--danger); }
-
-  .review-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 0.75rem;
-  }
-
-  .review-qnum {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  .review-q { font-size: 14px; font-weight: 500; line-height: 1.45; flex: 1; }
-
-  .status-dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .status-dot.ok { background: rgba(57,217,138,0.2); color: var(--accent); }
-  .status-dot.no { background: rgba(230,57,70,0.2); color: var(--danger); }
-
-  .review-answers { display: flex; flex-direction: column; gap: 5px; margin-bottom: 0.75rem; }
-
-  .ans-row {
-    font-size: 12px;
-    display: flex;
-    gap: 6px;
-    align-items: flex-start;
-  }
-
-  .ans-row .lbl { color: var(--text-muted); flex-shrink: 0; }
-  .ans-row .val { color: var(--text); }
-  .ans-row .val.ok { color: var(--accent); }
-  .ans-row .val.no { color: var(--danger); text-decoration: line-through; }
-
-  .review-exp {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.6;
-    border-top: 1px solid var(--border);
-    padding-top: 0.75rem;
-    margin-top: 0.5rem;
-  }
-
-  .btn-restart {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-family: var(--font);
-    font-size: 14px;
-    font-weight: 500;
-    padding: 12px 28px;
-    border-radius: var(--radius);
-    cursor: pointer;
-    width: 100%;
-    transition: border-color 0.2s, color 0.2s;
-  }
-
-  .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Timeout overlay */
-  .timeout-flash {
-    position: fixed;
-    inset: 0;
-    background: rgba(230,57,70,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    animation: flashIn 0.2s ease;
+  .q-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(77,150,255,0.15), transparent 70%);
     pointer-events: none;
   }
 
-  .timeout-flash span {
-    background: var(--danger);
-    color: #fff;
-    font-family: var(--mono);
-    font-size: 14px;
+  .streak-bar {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+  .streak-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: all 0.3s;
+  }
+  .streak-dot.lit { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); }
+
+  .emoji-hint { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+
+  .question-text {
+    font-family: 'Fredoka One', cursive;
+    font-size: 3rem;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+  .question-text span { color: var(--accent2); }
+
+  .q-type-badge {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 50px;
+    font-size: 0.75rem;
     font-weight: 700;
-    padding: 10px 24px;
-    border-radius: var(--radius);
-    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .badge-add { background: rgba(107,203,119,0.2); color: var(--accent3); }
+  .badge-sub { background: rgba(255,107,107,0.2); color: var(--accent1); }
+  .badge-mul { background: rgba(77,150,255,0.2); color: var(--accent4); }
+
+  /* Answer buttons */
+  .answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1rem;
   }
 
-  @keyframes flashIn { from { opacity: 0; } to { opacity: 1; } }
-
-  @media (max-width: 600px) {
-    .screen { padding: 1rem; }
-    .landing-box { padding: 2rem 1.5rem; }
-    .landing-box h1 { font-size: 1.6rem; }
-    .question-card { padding: 1.5rem; }
-    .q-text { font-size: 15px; }
-    .score-display { font-size: 3rem; }
+  .ans-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.8rem;
+    padding: 1rem;
+    border-radius: 18px;
+    border: 2.5px solid rgba(255,255,255,0.1);
+    background: var(--card);
+    color: white;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+    overflow: hidden;
   }
+  .ans-btn:hover:not(:disabled) { transform: scale(1.04) translateY(-2px); border-color: var(--accent4); box-shadow: 0 4px 16px rgba(77,150,255,0.25); }
+  .ans-btn:active:not(:disabled) { transform: scale(0.97); }
+  .ans-btn.correct { background: var(--accent3); border-color: var(--accent3); animation: correctBump 0.4s ease; }
+  .ans-btn.wrong { background: var(--accent1); border-color: var(--accent1); animation: shake 0.4s ease; }
+  .ans-btn.reveal { background: rgba(107,203,119,0.2); border-color: var(--accent3); }
+
+  @keyframes correctBump { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+  .feedback-msg {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    min-height: 1.8rem;
+    transition: all 0.2s;
+  }
+  .feedback-msg.good { color: var(--accent3); }
+  .feedback-msg.bad { color: var(--accent1); }
+
+  /* ── END SCREEN ── */
+  .result-emoji { font-size: 4rem; margin-bottom: 0.5rem; animation: bounce 1s ease infinite; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+  .result-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 2.5rem;
+    color: var(--accent2);
+    margin-bottom: 0.4rem;
+    text-shadow: 3px 3px 0 rgba(255,107,107,0.4);
+  }
+
+  .result-subtitle { font-size: 1rem; color: var(--text2); margin-bottom: 2rem; font-weight: 600; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 1rem 0.5rem;
+    border: 1.5px solid rgba(255,255,255,0.08);
+  }
+  .stat-val { font-family: 'Fredoka One', cursive; font-size: 2rem; }
+  .stat-lbl { font-size: 0.7rem; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+  .stars-row { font-size: 2rem; margin-bottom: 1.5rem; letter-spacing: 4px; }
+
+  .end-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .btn-play-again {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent3), var(--accent4));
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(77,150,255,0.3);
+    transition: all 0.2s;
+  }
+  .btn-play-again:hover { transform: scale(1.06) translateY(-2px); }
+
+  .btn-menu {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.2);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-menu:hover { border-color: var(--text2); color: white; transform: scale(1.04); }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+    z-index: 999;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Progress bar */
+  .progress-wrap { background: rgba(255,255,255,0.08); border-radius: 50px; height: 6px; margin-bottom: 1.25rem; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 50px; background: linear-gradient(90deg, var(--accent4), var(--accent5)); transition: width 0.4s ease; }
 </style>
 </head>
 <body>
 
-<!-- LANDING SCREEN -->
-<div class="screen active" id="screen-landing">
-  <div class="landing-box">
-    <div class="badge">Biology · Class VII</div>
-    <h1>Vertebrates<br>Classification Quiz</h1>
-    <p>Test your knowledge of the five vertebrate classes — Pisces, Amphibia, Reptilia, Aves, and Mammalia. Answer 10 questions, one minute each.</p>
-    <div class="info-row">
-      <div class="info-chip"><span>10</span> Questions</div>
-      <div class="info-chip"><span>1 min</span> per question</div>
-      <div class="info-chip"><span>MCQ</span> Format</div>
+<!-- Starfield -->
+<div class="stars" id="stars"></div>
+
+<!-- Planet decorations -->
+<div class="planet planet1"></div>
+<div class="planet planet2"></div>
+<div class="planet planet3"></div>
+
+<div id="app">
+
+  <!-- START SCREEN -->
+  <div class="screen active" id="start-screen">
+    <span class="rocket-emoji">🚀</span>
+    <div class="logo">Math Blast!</div>
+    <div class="tagline">Blast through numbers at warp speed!</div>
+
+    <div class="level-label">Choose your mission</div>
+    <div class="level-btns">
+      <button class="level-btn selected" data-level="easy" onclick="selectLevel('easy')">Easy</button>
+      <button class="level-btn" data-level="medium" onclick="selectLevel('medium')">Medium</button>
+      <button class="level-btn" data-level="hard" onclick="selectLevel('hard')">Hard</button>
     </div>
-    <input type="text" class="name-field" id="student-name" placeholder="Enter your full name to begin…" maxlength="60" autocomplete="off" />
-    <button class="btn-primary" id="start-btn" onclick="startQuiz()" disabled>Start Exam →</button>
-  </div>
-</div>
 
-<!-- QUIZ SCREEN -->
-<div class="screen" id="screen-quiz">
-  <div class="quiz-header">
-    <div>
-      <div class="q-counter">Question <strong id="q-num">1</strong> of <strong>10</strong></div>
-      <div style="font-size:12px;color:var(--text-muted);margin-top:3px;" id="student-tag"></div>
+    <button class="start-btn" onclick="startGame()">🚀 Launch!</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen" id="game-screen">
+
+    <div class="hud">
+      <div class="hud-item">
+        <div class="hud-label">Score</div>
+        <div class="hud-value" id="score-val">0</div>
+      </div>
+      <div class="timer-wrap">
+        <svg id="timer-svg" width="56" height="56" viewBox="0 0 56 56">
+          <circle id="timer-bg" cx="28" cy="28" r="22"/>
+          <circle id="timer-arc" cx="28" cy="28" r="22"/>
+        </svg>
+        <div class="timer-num" id="timer-num">10</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Lives</div>
+        <div class="hud-value" id="lives-val">❤️❤️❤️</div>
+      </div>
+      <div class="hud-item">
+        <div class="hud-label">Q</div>
+        <div class="hud-value" id="q-val">1/10</div>
+      </div>
     </div>
-    <div class="timer-ring">
-      <svg width="56" height="56" viewBox="0 0 56 56">
-        <circle class="bg" cx="28" cy="28" r="24" />
-        <circle class="fg" id="timer-arc" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0" />
-      </svg>
-      <div class="timer-num" id="timer-num">60</div>
+
+    <div class="progress-wrap"><div class="progress-bar" id="prog-bar" style="width:0%"></div></div>
+
+    <div class="q-card">
+      <div class="streak-bar" id="streak-bar">
+        <div class="streak-dot" id="sd0"></div>
+        <div class="streak-dot" id="sd1"></div>
+        <div class="streak-dot" id="sd2"></div>
+      </div>
+      <span class="emoji-hint" id="emoji-hint">🌟</span>
+      <div class="question-text" id="question-text">5 + 3 = <span>?</span></div>
+      <span class="q-type-badge badge-add" id="q-badge">Addition</span>
+    </div>
+
+    <div class="answers" id="answers"></div>
+    <div class="feedback-msg" id="feedback-msg"></div>
+  </div>
+
+  <!-- END SCREEN -->
+  <div class="screen" id="end-screen">
+    <div class="result-emoji" id="result-emoji">🏆</div>
+    <div class="result-title" id="result-title">Incredible!</div>
+    <div class="result-subtitle" id="result-subtitle">You're a math superstar!</div>
+    <div class="stars-row" id="stars-row">⭐⭐⭐</div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--accent2)" id="end-score">0</div>
+        <div class="stat-lbl">Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--accent3)" id="end-correct">0</div>
+        <div class="stat-lbl">Correct</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:var(--accent4)" id="end-best">0</div>
+        <div class="stat-lbl">Best Streak</div>
+      </div>
+    </div>
+
+    <div class="end-btns">
+      <button class="btn-play-again" onclick="startGame()">Play Again!</button>
+      <button class="btn-menu" onclick="showScreen('start-screen')">Menu</button>
     </div>
   </div>
 
-  <div class="progress-track">
-    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-  </div>
-
-  <div class="question-card">
-    <div class="q-label" id="q-class-label"></div>
-    <div class="q-text" id="q-text"></div>
-  </div>
-
-  <div class="options-grid" id="options-grid"></div>
-  <div class="feedback-bar" id="feedback-bar"></div>
-
-  <div class="nav-row">
-    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next →</button>
-  </div>
-</div>
-
-<!-- REPORT SCREEN -->
-<div class="screen" id="screen-report">
-  <div class="report-header">
-    <div class="student-name" id="report-name"></div>
-    <div class="score-display" id="report-score"></div>
-    <div class="score-sub">out of 10 questions</div>
-    <div class="score-pills">
-      <div class="pill correct" id="pill-correct"></div>
-      <div class="pill wrong" id="pill-wrong"></div>
-      <div class="pill pct" id="pill-pct"></div>
-    </div>
-  </div>
-
-  <div class="review-list" id="review-list"></div>
-  <button class="btn-restart" onclick="restart()">↺ Restart Quiz</button>
 </div>
 
 <script>
-const questions = [
-  {
-    q: "Which class of vertebrates breathes through gills?",
-    cls: "Class Pisces",
-    options: ["Class Amphibia", "Class Pisces", "Class Reptilia", "Class Mammalia"],
-    answer: 1,
-    explanation: "Class Pisces (fish) breathe exclusively through gills. Examples include rohu, dogfish, catla, trout, stingray, and electric ray."
-  },
-  {
-    q: "Which vertebrate class has moist, slimy, and slippery skin?",
-    cls: "Class Amphibia",
-    options: ["Class Reptilia", "Class Aves", "Class Amphibia", "Class Pisces"],
-    answer: 2,
-    explanation: "Amphibians have moist, slimy, slippery skin. This helps them breathe through their skin in addition to their lungs."
-  },
-  {
-    q: "What is the method of reproduction in Class Mammalia?",
-    cls: "Class Mammalia",
-    options: ["Lay eggs in water", "Lay eggs on land", "Give birth to young ones", "Lay eggs and incubate"],
-    answer: 2,
-    explanation: "Mammals give birth to live young ones (viviparous). This distinguishes them from all other vertebrate classes, which lay eggs."
-  },
-  {
-    q: "Which of the following is a warm-blooded vertebrate?",
-    cls: "Body Temperature",
-    options: ["Frog", "Lizard", "Crocodile", "Parrot"],
-    answer: 3,
-    explanation: "Parrots belong to Class Aves (birds), which are warm-blooded. Frogs (Amphibia), lizards and crocodiles (Reptilia) are all cold-blooded."
-  },
-  {
-    q: "A salamander belongs to which class?",
-    cls: "Class Amphibia",
-    options: ["Class Pisces", "Class Reptilia", "Class Amphibia", "Class Mammalia"],
-    answer: 2,
-    explanation: "Salamanders are amphibians. Along with frogs and toads, they are classic examples of Class Amphibia."
-  },
-  {
-    q: "Which class has dry, cornified skin as its body covering?",
-    cls: "Class Reptilia",
-    options: ["Class Pisces", "Class Amphibia", "Class Aves", "Class Reptilia"],
-    answer: 3,
-    explanation: "Class Reptilia is characterized by dry, cornified (hardened, scale-like) skin. Examples: lizard, tortoise, turtle, snake, crocodile."
-  },
-  {
-    q: "What type of body covering is found in Class Aves?",
-    cls: "Class Aves",
-    options: ["Scales and fins", "Hair or fur", "Moist slippery skin", "Feathers"],
-    answer: 3,
-    explanation: "Birds (Class Aves) are covered with feathers. Examples: parrot, crow, pigeon, penguin, sparrow."
-  },
-  {
-    q: "Which two classes lay eggs in water?",
-    cls: "Reproduction",
-    options: ["Class Pisces and Class Amphibia", "Class Reptilia and Class Aves", "Class Mammalia and Class Pisces", "Class Aves and Class Amphibia"],
-    answer: 0,
-    explanation: "Both Class Pisces and Class Amphibia lay their eggs in water. Reptiles and birds lay eggs on land, while mammals give birth to live young."
-  },
-  {
-    q: "Stingray and electric ray are examples of which class?",
-    cls: "Class Pisces",
-    options: ["Class Reptilia", "Class Amphibia", "Class Pisces", "Class Aves"],
-    answer: 2,
-    explanation: "Stingray and electric ray are fish, so they belong to Class Pisces. Other examples from the chart include rohu, dogfish, catla, and trout."
-  },
-  {
-    q: "Which class has webbed feet and 4 legs?",
-    cls: "Legs & Feet",
-    options: ["Class Pisces", "Class Reptilia", "Class Mammalia", "Class Amphibia"],
-    answer: 3,
-    explanation: "Class Amphibia has 4 webbed feet, which help them move in both land and water environments — matching their habitat of land and water."
-  }
-];
+// ── Stars ──
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${1.5+Math.random()*3}s;opacity:${0.2+Math.random()*0.6};width:${1+Math.random()*3}px;height:${1+Math.random()*3}px;animation-delay:${Math.random()*3}s`;
+  starsEl.appendChild(s);
+}
 
-const TOTAL_TIME = 60;
-const CIRCUMFERENCE = 150.8;
-
-let studentName = '';
-let current = 0;
-let score = 0;
-let answers = [];
-let timerInterval = null;
-let timeLeft = TOTAL_TIME;
+// ── State ──
+let level = 'easy';
+let score = 0, lives = 3, qIndex = 0, streak = 0, bestStreak = 0;
+let totalQuestions = 10, correctCount = 0;
+let questions = [];
+let timerVal = 10, timerInterval;
 let answered = false;
 
-// Name input enable/disable start button
-document.getElementById('student-name').addEventListener('input', function() {
-  document.getElementById('start-btn').disabled = this.value.trim().length < 2;
-});
+const LEVEL_CONFIG = {
+  easy:   { max: 10,  ops: ['+', '-'],      time: 12, points: 10 },
+  medium: { max: 20,  ops: ['+', '-', '×'], time: 10, points: 15 },
+  hard:   { max: 30,  ops: ['+', '-', '×'], time: 8,  points: 20 }
+};
 
-document.getElementById('student-name').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && this.value.trim().length >= 2) startQuiz();
-});
+const EMOJIS_ADD = ['🍎','🌟','🎈','🐶','🌈','⭐','🎉','🦋','🍕','🌸'];
+const EMOJIS_SUB = ['🚀','🌙','🎮','🦖','🏆','🎯','💎','🦄','🌊','🎪'];
+const EMOJIS_MUL = ['🔥','⚡','💥','🎲','🎸','🏅','🦊','🌺','🍀','🎭'];
+const FEEDBACK_GOOD = ['Amazing! 🎉','Awesome! ⭐','You rock! 🤘','Brilliant! 💡','Superstar! 🌟','Perfect! ✨','Wow! 🎊','Fantastic! 🚀'];
+const FEEDBACK_BAD  = ['Try again! 💪','Keep going! 🌈','You got this! ❤️','Almost! 🎯','Next one! ⚡'];
 
-function show(id) {
+function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+
+function genQuestion() {
+  const cfg = LEVEL_CONFIG[level];
+  const op = cfg.ops[rand(0, cfg.ops.length - 1)];
+  let a, b, answer;
+
+  if (op === '+') {
+    a = rand(1, cfg.max); b = rand(1, cfg.max);
+    answer = a + b;
+  } else if (op === '-') {
+    a = rand(2, cfg.max); b = rand(1, a);
+    answer = a - b;
+  } else {
+    a = rand(2, cfg.max <= 10 ? 5 : 10); b = rand(2, 5);
+    answer = a * b;
+  }
+
+  // Generate 3 wrong answers
+  const wrong = new Set();
+  while (wrong.size < 3) {
+    let w = answer + rand(-5, 5);
+    if (w !== answer && w >= 0) wrong.add(w);
+  }
+
+  const choices = [...wrong, answer].sort(() => Math.random() - 0.5);
+  const emoji = op === '+' ? EMOJIS_ADD[rand(0,9)] : op === '-' ? EMOJIS_SUB[rand(0,9)] : EMOJIS_MUL[rand(0,9)];
+
+  return { a, b, op, answer, choices, emoji };
+}
+
+function buildQuestions() {
+  questions = [];
+  for (let i = 0; i < totalQuestions; i++) questions.push(genQuestion());
+}
+
+function selectLevel(l) {
+  level = l;
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector(`[data-level="${l}"]`).classList.add('selected');
+}
+
+function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function startQuiz() {
-  studentName = document.getElementById('student-name').value.trim();
-  if (studentName.length < 2) return;
-  current = 0; score = 0; answers = []; answered = false;
-  document.getElementById('student-tag').textContent = studentName;
-  show('screen-quiz');
-  loadQuestion();
+function startGame() {
+  score = 0; lives = 3; qIndex = 0; streak = 0; bestStreak = 0; correctCount = 0;
+  buildQuestions();
+  showScreen('game-screen');
+  renderQuestion();
 }
 
-function loadQuestion() {
+function renderQuestion() {
+  if (qIndex >= totalQuestions) { endGame(); return; }
   answered = false;
-  const q = questions[current];
-  const letters = ['A', 'B', 'C', 'D'];
+  const q = questions[qIndex];
+  const opSymbol = q.op;
 
-  document.getElementById('q-num').textContent = current + 1;
-  document.getElementById('q-class-label').textContent = q.cls;
-  document.getElementById('q-text').textContent = q.q;
-  document.getElementById('progress-fill').style.width = ((current / questions.length) * 100) + '%';
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('lives-val').textContent = '❤️'.repeat(lives);
+  document.getElementById('q-val').textContent = `${qIndex+1}/${totalQuestions}`;
+  document.getElementById('prog-bar').style.width = `${(qIndex/totalQuestions)*100}%`;
+  document.getElementById('emoji-hint').textContent = q.emoji;
+  document.getElementById('question-text').innerHTML = `${q.a} ${opSymbol} ${q.b} = <span>?</span>`;
+  document.getElementById('feedback-msg').textContent = '';
+  document.getElementById('feedback-msg').className = 'feedback-msg';
 
-  const grid = document.getElementById('options-grid');
-  grid.innerHTML = '';
-  q.options.forEach((opt, i) => {
+  const badge = document.getElementById('q-badge');
+  if (q.op === '+') { badge.textContent = 'Addition'; badge.className = 'q-type-badge badge-add'; }
+  else if (q.op === '-') { badge.textContent = 'Subtraction'; badge.className = 'q-type-badge badge-sub'; }
+  else { badge.textContent = 'Multiply'; badge.className = 'q-type-badge badge-mul'; }
+
+  // Streak dots
+  for (let i = 0; i < 3; i++) {
+    const d = document.getElementById('sd' + i);
+    d.className = 'streak-dot' + (streak > i ? ' lit' : '');
+  }
+
+  // Answers
+  const answersEl = document.getElementById('answers');
+  answersEl.innerHTML = '';
+  q.choices.forEach(c => {
     const btn = document.createElement('button');
-    btn.className = 'option';
-    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
-    btn.onclick = () => selectAnswer(i);
-    grid.appendChild(btn);
+    btn.className = 'ans-btn';
+    btn.textContent = c;
+    btn.onclick = () => pickAnswer(btn, c, q.answer);
+    answersEl.appendChild(btn);
   });
-
-  const fb = document.getElementById('feedback-bar');
-  fb.className = 'feedback-bar';
-  fb.innerHTML = '';
-
-  const nextBtn = document.getElementById('btn-next');
-  nextBtn.className = 'btn-next';
-  nextBtn.textContent = current === questions.length - 1 ? 'Finish Exam →' : 'Next →';
 
   startTimer();
 }
 
 function startTimer() {
   clearInterval(timerInterval);
-  timeLeft = TOTAL_TIME;
-  updateTimerUI();
+  const maxTime = LEVEL_CONFIG[level].time;
+  timerVal = maxTime;
+  updateTimerUI(timerVal, maxTime);
 
   timerInterval = setInterval(() => {
-    timeLeft--;
-    updateTimerUI();
-    if (timeLeft <= 0) {
+    timerVal--;
+    updateTimerUI(timerVal, maxTime);
+    if (timerVal <= 0) {
       clearInterval(timerInterval);
-      timeUp();
+      if (!answered) timeUp();
     }
   }, 1000);
 }
 
-function updateTimerUI() {
+function updateTimerUI(val, max) {
+  document.getElementById('timer-num').textContent = val;
   const arc = document.getElementById('timer-arc');
-  const num = document.getElementById('timer-num');
-  const pct = timeLeft / TOTAL_TIME;
-  arc.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
-  num.textContent = timeLeft;
-
-  if (timeLeft <= 15) {
-    arc.style.stroke = '#e63946';
-    num.style.color = '#e63946';
-  } else if (timeLeft <= 30) {
-    arc.style.stroke = '#f4a261';
-    num.style.color = '#f4a261';
-  } else {
-    arc.style.stroke = '#39d98a';
-    num.style.color = 'var(--text)';
-  }
+  const pct = val / max;
+  arc.style.strokeDashoffset = 138 * (1 - pct);
+  arc.style.stroke = pct > 0.5 ? 'var(--accent3)' : pct > 0.25 ? 'var(--accent2)' : 'var(--accent1)';
 }
 
 function timeUp() {
-  if (answered) return;
   answered = true;
-
-  // Show timeout flash
-  const flash = document.createElement('div');
-  flash.className = 'timeout-flash';
-  flash.innerHTML = '<span>⏱ TIME UP</span>';
-  document.body.appendChild(flash);
-  setTimeout(() => flash.remove(), 1200);
-
-  answers.push({ selected: null, correct: false });
-
-  // Reveal correct answer
-  const btns = document.querySelectorAll('.option');
-  btns.forEach((btn, i) => {
-    btn.disabled = true;
-    if (i === questions[current].answer) btn.classList.add('correct');
-    else btn.classList.add('reveal');
-  });
-
-  showFeedback(false);
-  document.getElementById('btn-next').classList.add('show');
+  lives--;
+  streak = 0;
+  const fb = document.getElementById('feedback-msg');
+  fb.textContent = `⏰ Time's up! Answer: ${questions[qIndex].answer}`;
+  fb.className = 'feedback-msg bad';
+  highlightCorrect();
+  if (lives <= 0) { setTimeout(endGame, 1200); return; }
+  setTimeout(() => { qIndex++; renderQuestion(); }, 1400);
 }
 
-function selectAnswer(i) {
+function pickAnswer(btn, chosen, correct) {
   if (answered) return;
   answered = true;
   clearInterval(timerInterval);
 
-  const q = questions[current];
-  const isCorrect = i === q.answer;
-  if (isCorrect) score++;
+  const allBtns = document.querySelectorAll('.ans-btn');
+  allBtns.forEach(b => b.disabled = true);
 
-  answers.push({ selected: i, correct: isCorrect });
+  const fb = document.getElementById('feedback-msg');
 
-  const btns = document.querySelectorAll('.option');
-  btns.forEach((btn, idx) => {
-    btn.disabled = true;
-    if (idx === q.answer) btn.classList.add('correct');
-    else if (idx === i && !isCorrect) btn.classList.add('wrong');
-    else btn.classList.add('reveal');
-  });
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+    correctCount++;
+    const bonus = streak >= 3 ? 2 : 1;
+    const pts = LEVEL_CONFIG[level].points * bonus;
+    score += pts;
+    fb.textContent = (streak >= 3 ? `🔥 x${streak} Streak! +${pts}pts  ` : '') + FEEDBACK_GOOD[rand(0, FEEDBACK_GOOD.length-1)];
+    fb.className = 'feedback-msg good';
 
-  showFeedback(isCorrect);
-  document.getElementById('btn-next').classList.add('show');
-}
+    // Update streak dots
+    for (let i = 0; i < 3; i++) {
+      const d = document.getElementById('sd' + i);
+      if (streak > i) d.classList.add('lit');
+    }
 
-function showFeedback(isCorrect) {
-  const q = questions[current];
-  const fb = document.getElementById('feedback-bar');
-  fb.className = 'feedback-bar show' + (isCorrect ? '' : ' wrong');
-  fb.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect.'}</strong> ${q.explanation}`;
-}
-
-function nextQuestion() {
-  current++;
-  if (current >= questions.length) {
-    showReport();
+    setTimeout(() => { qIndex++; renderQuestion(); }, 900);
   } else {
-    loadQuestion();
+    btn.classList.add('wrong');
+    streak = 0;
+    lives--;
+    fb.textContent = FEEDBACK_BAD[rand(0, FEEDBACK_BAD.length-1)] + ` Ans: ${correct}`;
+    fb.className = 'feedback-msg bad';
+    highlightCorrect();
+    if (lives <= 0) { setTimeout(endGame, 1200); return; }
+    setTimeout(() => { qIndex++; renderQuestion(); }, 1400);
   }
+
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('lives-val').textContent = '❤️'.repeat(Math.max(0, lives));
 }
 
-function showReport() {
-  clearInterval(timerInterval);
-  document.getElementById('progress-fill').style.width = '100%';
-
-  const wrongCount = questions.length - score;
-  const pct = Math.round((score / questions.length) * 100);
-
-  document.getElementById('report-name').textContent = studentName + "'s Result";
-  document.getElementById('report-score').textContent = score + '/10';
-  document.getElementById('pill-correct').textContent = `✓ ${score} correct`;
-  document.getElementById('pill-wrong').textContent = `✗ ${wrongCount} wrong`;
-  document.getElementById('pill-pct').textContent = `${pct}% score`;
-
-  const list = document.getElementById('review-list');
-  list.innerHTML = '';
-
-  questions.forEach((q, i) => {
-    const ans = answers[i];
-    const isCorrect = ans && ans.correct;
-    const selIdx = ans ? ans.selected : null;
-    const letters = ['A', 'B', 'C', 'D'];
-
-    const item = document.createElement('div');
-    item.className = 'review-item ' + (isCorrect ? 'correct-item' : 'wrong-item');
-
-    let yourAnswer = selIdx !== null
-      ? `${letters[selIdx]}. ${q.options[selIdx]}`
-      : 'No answer (time up)';
-
-    item.innerHTML = `
-      <div class="review-top">
-        <div class="review-qnum">Q${i + 1}</div>
-        <div class="review-q">${q.q}</div>
-        <div class="status-dot ${isCorrect ? 'ok' : 'no'}">${isCorrect ? '✓' : '✗'}</div>
-      </div>
-      <div class="review-answers">
-        <div class="ans-row"><span class="lbl">Your answer:</span><span class="val ${isCorrect ? 'ok' : 'no'}">${yourAnswer}</span></div>
-        ${!isCorrect ? `<div class="ans-row"><span class="lbl">Correct answer:</span><span class="val ok">${letters[q.answer]}. ${q.options[q.answer]}</span></div>` : ''}
-      </div>
-      <div class="review-exp">${q.explanation}</div>
-    `;
-
-    list.appendChild(item);
+function highlightCorrect() {
+  document.querySelectorAll('.ans-btn').forEach(b => {
+    if (parseInt(b.textContent) === questions[qIndex].answer) b.classList.add('reveal');
   });
-
-  show('screen-report');
-  window.scrollTo(0, 0);
 }
 
-function restart() {
-  document.getElementById('student-name').value = '';
-  document.getElementById('start-btn').disabled = true;
-  show('screen-landing');
+function endGame() {
+  clearInterval(timerInterval);
+  showScreen('end-screen');
+
+  document.getElementById('end-score').textContent = score;
+  document.getElementById('end-correct').textContent = `${correctCount}/${totalQuestions}`;
+  document.getElementById('end-best').textContent = bestStreak;
+
+  const pct = correctCount / totalQuestions;
+  let emoji, title, subtitle, stars;
+  if (pct >= 0.9) { emoji='🏆'; title='Incredible!'; subtitle="You're a Math Champion! 🌟"; stars='⭐⭐⭐'; launchConfetti(); }
+  else if (pct >= 0.7) { emoji='🎉'; title='Great Job!'; subtitle="You're a Math Superstar! 🚀"; stars='⭐⭐⭐'; launchConfetti(); }
+  else if (pct >= 0.5) { emoji='👍'; title='Good Work!'; subtitle='Keep practising, you\'re getting there! 💪'; stars='⭐⭐'; }
+  else { emoji='🌈'; title='Keep Going!'; subtitle='Every champion starts somewhere! ❤️'; stars='⭐'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-subtitle').textContent = subtitle;
+  document.getElementById('stars-row').textContent = stars;
+}
+
+function launchConfetti() {
+  const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c77dff','#ff9f43'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.cssText = `left:${Math.random()*100}vw;background:${colors[~~(Math.random()*colors.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>0.5?'50%':'2px'};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*1}s`;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }, i * 30);
+  }
 }
 </script>
 </body>
