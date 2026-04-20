@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertebrates Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2330;
+    --border: rgba(255,255,255,0.08);
+    --accent: #39d98a;
+    --accent2: #00b4d8;
+    --warn: #f4a261;
+    --danger: #e63946;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --radius: 14px;
+    --font: 'Sora', sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(57,217,138,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(57,217,138,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -30%;
+    left: -20%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(ellipse, rgba(57,217,138,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen {
+    display: none;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+    padding: 2rem;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── LANDING ── */
+  .landing-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(57,217,138,0.12);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(57,217,138,0.2);
+    margin-bottom: 1.5rem;
+  }
+
+  .landing-box h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .landing-box p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .info-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .info-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .info-chip span { color: var(--text); font-weight: 600; }
+
+  .name-field {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-size: 15px;
+    color: var(--text);
+    width: 100%;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 1.25rem;
+  }
+
+  .name-field:focus { border-color: rgba(57,217,138,0.5); }
+  .name-field::placeholder { color: var(--text-muted); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0d1117;
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 14px 32px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; transform: none; }
+
+  /* ── QUIZ ── */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .q-counter {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .q-counter strong { color: var(--accent); }
+
+  .timer-ring {
+    position: relative;
+    width: 56px;
+    height: 56px;
+  }
+
+  .timer-ring svg { transform: rotate(-90deg); }
+
+  .timer-ring circle {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .timer-ring .bg { stroke: var(--surface2); }
+  .timer-ring .fg { stroke: var(--accent); transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+
+  .timer-num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 99px;
+    margin-bottom: 1.75rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .q-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .q-text {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+
+  .option:hover:not(:disabled) { border-color: rgba(57,217,138,0.4); background: rgba(57,217,138,0.05); transform: translateX(3px); }
+  .option:disabled { cursor: default; }
+
+  .opt-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .option.correct { background: rgba(57,217,138,0.1); border-color: var(--accent); }
+  .option.correct .opt-letter { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+
+  .option.wrong { background: rgba(230,57,70,0.1); border-color: var(--danger); }
+  .option.wrong .opt-letter { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  .option.reveal { opacity: 0.4; }
+
+  .feedback-bar {
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    border-left: 3px solid var(--accent);
+    margin-top: 1rem;
+    display: none;
+  }
+
+  .feedback-bar.wrong { border-left-color: var(--danger); }
+  .feedback-bar.show { display: block; animation: fadeUp 0.25s ease; }
+
+  .feedback-bar strong { color: var(--text); }
+
+  .nav-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  .btn-next {
+    background: var(--accent);
+    color: #0d1117;
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 28px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .btn-next:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-next.show { display: block; animation: fadeUp 0.2s ease; }
+
+  /* ── REPORT ── */
+  .report-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .student-name {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .score-display {
+    font-family: var(--mono);
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+  }
+
+  .score-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+  .score-pills {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+
+  .pill.correct { background: rgba(57,217,138,0.15); color: var(--accent); }
+  .pill.wrong { background: rgba(230,57,70,0.15); color: var(--danger); }
+  .pill.pct { background: rgba(0,180,216,0.15); color: var(--accent2); }
+
+  .review-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 2rem; }
+
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid var(--border);
+  }
+
+  .review-item.correct-item { border-left-color: var(--accent); }
+  .review-item.wrong-item { border-left-color: var(--danger); }
+
+  .review-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+  }
+
+  .review-qnum {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .review-q { font-size: 14px; font-weight: 500; line-height: 1.45; flex: 1; }
+
+  .status-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .status-dot.ok { background: rgba(57,217,138,0.2); color: var(--accent); }
+  .status-dot.no { background: rgba(230,57,70,0.2); color: var(--danger); }
+
+  .review-answers { display: flex; flex-direction: column; gap: 5px; margin-bottom: 0.75rem; }
+
+  .ans-row {
+    font-size: 12px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .ans-row .lbl { color: var(--text-muted); flex-shrink: 0; }
+  .ans-row .val { color: var(--text); }
+  .ans-row .val.ok { color: var(--accent); }
+  .ans-row .val.no { color: var(--danger); text-decoration: line-through; }
+
+  .review-exp {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .btn-restart {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 12px 28px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    width: 100%;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Timeout overlay */
+  .timeout-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(230,57,70,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    animation: flashIn 0.2s ease;
+    pointer-events: none;
+  }
+
+  .timeout-flash span {
+    background: var(--danger);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: var(--radius);
+    letter-spacing: 0.05em;
+  }
+
+  @keyframes flashIn { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 600px) {
+    .screen { padding: 1rem; }
+    .landing-box { padding: 2rem 1.5rem; }
+    .landing-box h1 { font-size: 1.6rem; }
+    .question-card { padding: 1.5rem; }
+    .q-text { font-size: 15px; }
+    .score-display { font-size: 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANDING SCREEN -->
+<div class="screen active" id="screen-landing">
+  <div class="landing-box">
+    <div class="badge">Biology · Class VII</div>
+    <h1>Vertebrates<br>Classification Quiz</h1>
+    <p>Test your knowledge of the five vertebrate classes — Pisces, Amphibia, Reptilia, Aves, and Mammalia. Answer 10 questions, one minute each.</p>
+    <div class="info-row">
+      <div class="info-chip"><span>10</span> Questions</div>
+      <div class="info-chip"><span>1 min</span> per question</div>
+      <div class="info-chip"><span>MCQ</span> Format</div>
+    </div>
+    <input type="text" class="name-field" id="student-name" placeholder="Enter your full name to begin…" maxlength="60" autocomplete="off" />
+    <button class="btn-primary" id="start-btn" onclick="startQuiz()" disabled>Start Exam →</button>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <div>
+      <div class="q-counter">Question <strong id="q-num">1</strong> of <strong>10</strong></div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:3px;" id="student-tag"></div>
+    </div>
+    <div class="timer-ring">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <circle class="bg" cx="28" cy="28" r="24" />
+        <circle class="fg" id="timer-arc" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0" />
+      </svg>
+      <div class="timer-num" id="timer-num">60</div>
+    </div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-label" id="q-class-label"></div>
+    <div class="q-text" id="q-text"></div>
+  </div>
+
+  <div class="options-grid" id="options-grid"></div>
+  <div class="feedback-bar" id="feedback-bar"></div>
+
+  <div class="nav-row">
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next →</button>
+  </div>
+</div>
+
+<!-- REPORT SCREEN -->
+<div class="screen" id="screen-report">
+  <div class="report-header">
+    <div class="student-name" id="report-name"></div>
+    <div class="score-display" id="report-score"></div>
+    <div class="score-sub">out of 10 questions</div>
+    <div class="score-pills">
+      <div class="pill correct" id="pill-correct"></div>
+      <div class="pill wrong" id="pill-wrong"></div>
+      <div class="pill pct" id="pill-pct"></div>
+    </div>
+  </div>
+
+  <div class="review-list" id="review-list"></div>
+  <button class="btn-restart" onclick="restart()">↺ Restart Quiz</button>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "Which class of vertebrates breathes through gills?",
+    cls: "Class Pisces",
+    options: ["Class Amphibia", "Class Pisces", "Class Reptilia", "Class Mammalia"],
+    answer: 1,
+    explanation: "Class Pisces (fish) breathe exclusively through gills. Examples include rohu, dogfish, catla, trout, stingray, and electric ray."
+  },
+  {
+    q: "Which vertebrate class has moist, slimy, and slippery skin?",
+    cls: "Class Amphibia",
+    options: ["Class Reptilia", "Class Aves", "Class Amphibia", "Class Pisces"],
+    answer: 2,
+    explanation: "Amphibians have moist, slimy, slippery skin. This helps them breathe through their skin in addition to their lungs."
+  },
+  {
+    q: "What is the method of reproduction in Class Mammalia?",
+    cls: "Class Mammalia",
+    options: ["Lay eggs in water", "Lay eggs on land", "Give birth to young ones", "Lay eggs and incubate"],
+    answer: 2,
+    explanation: "Mammals give birth to live young ones (viviparous). This distinguishes them from all other vertebrate classes, which lay eggs."
+  },
+  {
+    q: "Which of the following is a warm-blooded vertebrate?",
+    cls: "Body Temperature",
+    options: ["Frog", "Lizard", "Crocodile", "Parrot"],
+    answer: 3,
+    explanation: "Parrots belong to Class Aves (birds), which are warm-blooded. Frogs (Amphibia), lizards and crocodiles (Reptilia) are all cold-blooded."
+  },
+  {
+    q: "A salamander belongs to which class?",
+    cls: "Class Amphibia",
+    options: ["Class Pisces", "Class Reptilia", "Class Amphibia", "Class Mammalia"],
+    answer: 2,
+    explanation: "Salamanders are amphibians. Along with frogs and toads, they are classic examples of Class Amphibia."
+  },
+  {
+    q: "Which class has dry, cornified skin as its body covering?",
+    cls: "Class Reptilia",
+    options: ["Class Pisces", "Class Amphibia", "Class Aves", "Class Reptilia"],
+    answer: 3,
+    explanation: "Class Reptilia is characterized by dry, cornified (hardened, scale-like) skin. Examples: lizard, tortoise, turtle, snake, crocodile."
+  },
+  {
+    q: "What type of body covering is found in Class Aves?",
+    cls: "Class Aves",
+    options: ["Scales and fins", "Hair or fur", "Moist slippery skin", "Feathers"],
+    answer: 3,
+    explanation: "Birds (Class Aves) are covered with feathers. Examples: parrot, crow, pigeon, penguin, sparrow."
+  },
+  {
+    q: "Which two classes lay eggs in water?",
+    cls: "Reproduction",
+    options: ["Class Pisces and Class Amphibia", "Class Reptilia and Class Aves", "Class Mammalia and Class Pisces", "Class Aves and Class Amphibia"],
+    answer: 0,
+    explanation: "Both Class Pisces and Class Amphibia lay their eggs in water. Reptiles and birds lay eggs on land, while mammals give birth to live young."
+  },
+  {
+    q: "Stingray and electric ray are examples of which class?",
+    cls: "Class Pisces",
+    options: ["Class Reptilia", "Class Amphibia", "Class Pisces", "Class Aves"],
+    answer: 2,
+    explanation: "Stingray and electric ray are fish, so they belong to Class Pisces. Other examples from the chart include rohu, dogfish, catla, and trout."
+  },
+  {
+    q: "Which class has webbed feet and 4 legs?",
+    cls: "Legs & Feet",
+    options: ["Class Pisces", "Class Reptilia", "Class Mammalia", "Class Amphibia"],
+    answer: 3,
+    explanation: "Class Amphibia has 4 webbed feet, which help them move in both land and water environments — matching their habitat of land and water."
+  }
+];
+
+const TOTAL_TIME = 60;
+const CIRCUMFERENCE = 150.8;
+
+let studentName = '';
+let current = 0;
+let score = 0;
+let answers = [];
+let timerInterval = null;
+let timeLeft = TOTAL_TIME;
+let answered = false;
+
+// Name input enable/disable start button
+document.getElementById('student-name').addEventListener('input', function() {
+  document.getElementById('start-btn').disabled = this.value.trim().length < 2;
+});
+
+document.getElementById('student-name').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && this.value.trim().length >= 2) startQuiz();
+});
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  studentName = document.getElementById('student-name').value.trim();
+  if (studentName.length < 2) return;
+  current = 0; score = 0; answers = []; answered = false;
+  document.getElementById('student-tag').textContent = studentName;
+  show('screen-quiz');
+  loadQuestion();
+}
+
+function loadQuestion() {
+  answered = false;
+  const q = questions[current];
+  const letters = ['A', 'B', 'C', 'D'];
+
+  document.getElementById('q-num').textContent = current + 1;
+  document.getElementById('q-class-label').textContent = q.cls;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('progress-fill').style.width = ((current / questions.length) * 100) + '%';
+
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback-bar');
+  fb.className = 'feedback-bar';
+  fb.innerHTML = '';
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.className = 'btn-next';
+  nextBtn.textContent = current === questions.length - 1 ? 'Finish Exam →' : 'Next →';
+
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TOTAL_TIME;
+  updateTimerUI();
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const arc = document.getElementById('timer-arc');
+  const num = document.getElementById('timer-num');
+  const pct = timeLeft / TOTAL_TIME;
+  arc.style.strokeDashoffset = CIRCUMFERENCE * (1 - pct);
+  num.textContent = timeLeft;
+
+  if (timeLeft <= 15) {
+    arc.style.stroke = '#e63946';
+    num.style.color = '#e63946';
+  } else if (timeLeft <= 30) {
+    arc.style.stroke = '#f4a261';
+    num.style.color = '#f4a261';
+  } else {
+    arc.style.stroke = '#39d98a';
+    num.style.color = 'var(--text)';
+  }
+}
+
+function timeUp() {
+  if (answered) return;
+  answered = true;
+
+  // Show timeout flash
+  const flash = document.createElement('div');
+  flash.className = 'timeout-flash';
+  flash.innerHTML = '<span>⏱ TIME UP</span>';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 1200);
+
+  answers.push({ selected: null, correct: false });
+
+  // Reveal correct answer
+  const btns = document.querySelectorAll('.option');
+  btns.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === questions[current].answer) btn.classList.add('correct');
+    else btn.classList.add('reveal');
+  });
+
+  showFeedback(false);
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function selectAnswer(i) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const q = questions[current];
+  const isCorrect = i === q.answer;
+  if (isCorrect) score++;
+
+  answers.push({ selected: i, correct: isCorrect });
+
+  const btns = document.querySelectorAll('.option');
+  btns.forEach((btn, idx) => {
+    btn.disabled = true;
+    if (idx === q.answer) btn.classList.add('correct');
+    else if (idx === i && !isCorrect) btn.classList.add('wrong');
+    else btn.classList.add('reveal');
+  });
+
+  showFeedback(isCorrect);
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function showFeedback(isCorrect) {
+  const q = questions[current];
+  const fb = document.getElementById('feedback-bar');
+  fb.className = 'feedback-bar show' + (isCorrect ? '' : ' wrong');
+  fb.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect.'}</strong> ${q.explanation}`;
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) {
+    showReport();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showReport() {
+  clearInterval(timerInterval);
+  document.getElementById('progress-fill').style.width = '100%';
+
+  const wrongCount = questions.length - score;
+  const pct = Math.round((score / questions.length) * 100);
+
+  document.getElementById('report-name').textContent = studentName + "'s Result";
+  document.getElementById('report-score').textContent = score + '/10';
+  document.getElementById('pill-correct').textContent = `✓ ${score} correct`;
+  document.getElementById('pill-wrong').textContent = `✗ ${wrongCount} wrong`;
+  document.getElementById('pill-pct').textContent = `${pct}% score`;
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+
+  questions.forEach((q, i) => {
+    const ans = answers[i];
+    const isCorrect = ans && ans.correct;
+    const selIdx = ans ? ans.selected : null;
+    const letters = ['A', 'B', 'C', 'D'];
+
+    const item = document.createElement('div');
+    item.className = 'review-item ' + (isCorrect ? 'correct-item' : 'wrong-item');
+
+    let yourAnswer = selIdx !== null
+      ? `${letters[selIdx]}. ${q.options[selIdx]}`
+      : 'No answer (time up)';
+
+    item.innerHTML = `
+      <div class="review-top">
+        <div class="review-qnum">Q${i + 1}</div>
+        <div class="review-q">${q.q}</div>
+        <div class="status-dot ${isCorrect ? 'ok' : 'no'}">${isCorrect ? '✓' : '✗'}</div>
+      </div>
+      <div class="review-answers">
+        <div class="ans-row"><span class="lbl">Your answer:</span><span class="val ${isCorrect ? 'ok' : 'no'}">${yourAnswer}</span></div>
+        ${!isCorrect ? `<div class="ans-row"><span class="lbl">Correct answer:</span><span class="val ok">${letters[q.answer]}. ${q.options[q.answer]}</span></div>` : ''}
+      </div>
+      <div class="review-exp">${q.explanation}</div>
+    `;
+
+    list.appendChild(item);
+  });
+
+  show('screen-report');
+  window.scrollTo(0, 0);
+}
+
+function restart() {
+  document.getElementById('student-name').value = '';
+  document.getElementById('start-btn').disabled = true;
+  show('screen-landing');
+}
+</script>
+</body>
+</html>
